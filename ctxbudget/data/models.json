@@ -1,0 +1,68 @@
+{
+ "note": "Context windows and output caps. Every entry names its source. Nothing here was measured by this project, so all of it is `vendor-doc`: read from vendor documentation on the checked date and not re-verified since. Override any of it with --window and --reserve rather than trusting a table that ages.",
+ "checked": "2026-08-15",
+ "sources": {
+  "vendor-doc": "Vendor documentation, read on the checked date. A claim, not a measurement.",
+  "shared-window": "Local runtimes do not cap the reply separately. The reply comes out of the same window as the prompt, so the reserve here is a choice you are making and not a limit the runtime imposes."
+ },
+ "models": {
+  "gpt-4o": {
+   "family": "o200k_base", "window": 128000, "max_output": 16384,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "gpt-4o-mini": {
+   "family": "o200k_base", "window": 128000, "max_output": 16384,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "gpt-4-turbo": {
+   "family": "cl100k_base", "window": 128000, "max_output": 4096,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc",
+   "note": "128k of window and 4k of reply. The reply cap binds long before the window does, and that is the case this tool exists to make visible."
+  },
+  "gpt-3.5-turbo": {
+   "family": "cl100k_base", "window": 16385, "max_output": 4096,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "claude-3-5-sonnet": {
+   "family": "claude", "window": 200000, "max_output": 8192,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "claude-3-5-haiku": {
+   "family": "claude", "window": 200000, "max_output": 8192,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "claude-3-opus": {
+   "family": "claude", "window": 200000, "max_output": 4096,
+   "output_capped_separately": true, "deployment": "hosted", "source": "vendor-doc"
+  },
+  "llama-3.1-8b-instruct": {
+   "family": "llama3", "window": 131072, "max_output": null,
+   "output_capped_separately": false, "deployment": "local", "source": "vendor-doc"
+  },
+  "llama-3.1-70b-instruct": {
+   "family": "llama3", "window": 131072, "max_output": null,
+   "output_capped_separately": false, "deployment": "local", "source": "vendor-doc"
+  },
+  "qwen2.5-7b-instruct": {
+   "family": "qwen2.5", "window": 32768, "max_output": null,
+   "output_capped_separately": false, "deployment": "local", "source": "vendor-doc"
+  },
+  "qwen2.5-coder-32b-instruct": {
+   "family": "qwen2.5", "window": 32768, "max_output": null,
+   "output_capped_separately": false, "deployment": "local", "source": "vendor-doc"
+  }
+ },
+ "families": {
+  "cl100k_base": {"label": "OpenAI cl100k_base", "counting": "measured"},
+  "o200k_base": {"label": "OpenAI o200k_base", "counting": "measured"},
+  "qwen2.5": {"label": "Qwen 2.5", "counting": "measured"},
+  "llama3": {"label": "Llama 3", "counting": "measured"},
+  "claude": {
+   "label": "Claude",
+   "counting": "unmeasured",
+   "stand_in": "cl100k_base",
+   "why": "Anthropic publishes no tokenizer. Counting Claude exactly needs the count_tokens API endpoint and a key. This tool uses the cl100k_base table as a stand-in and reports the count as unmeasured with no error band, because inventing a band would be worse than admitting there is none."
+  }
+ },
+ "local_runtime_warning": "Setting a long context on a local runtime is easy to get wrong. Measured on ollama 0.32.9 on the machine that built this: only `options.num_ctx` in the API request body changes the loaded context length. `/set parameter num_ctx` in the REPL and `OLLAMA_CONTEXT_LENGTH` in the client shell both leave the server default in place and report no error, so a run you believe has 128k may be truncating at the default. Check `ollama ps` for the loaded size."
+}

@@ -42,16 +42,20 @@ TEXT_EXT = {
 MAX_BYTES = 200_000
 
 
-def collect(roots: list[str], limit: int) -> list[Path]:
+def collect(roots: list[str], limit: int, exclude: list[str] | None = None) -> list[Path]:
     """Every candidate file under the roots, then a deterministic sample of `limit` of them.
 
     The sample is ordered by a hash of the path rather than by directory order, so the corpus is
     spread across every repository under the roots instead of being the first N files of the
     alphabetically first one.
     """
+    excluded = exclude or []
     found: list[Path] = []
     for root in roots:
         for dirpath, dirnames, filenames in os.walk(root):
+            if any(fragment in dirpath for fragment in excluded):
+                dirnames[:] = []
+                continue
             dirnames[:] = [
                 d for d in dirnames
                 if d not in {".git", "node_modules", "__pycache__", ".venv", "venv",
@@ -251,13 +255,15 @@ def main() -> int:
     parser.add_argument("--corpus", nargs="+", required=True)
     parser.add_argument("--tokenizers-dir", required=True)
     parser.add_argument("--limit", type=int, default=1200)
+    parser.add_argument("--exclude", nargs="*", default=[],
+                        help="path fragments to skip, so the tool does not train on itself")
     parser.add_argument("--out-table", default="ctxbudget/data/token_table.json")
     parser.add_argument("--out-evidence", default="fixtures/evidence/calibration.md")
     parser.add_argument("--out-truth", default="fixtures/truth/counts.json")
     parser.add_argument("--fixture-dir", default="fixtures/corpus")
     args = parser.parse_args()
 
-    paths = collect(args.corpus, args.limit)
+    paths = collect(args.corpus, args.limit, args.exclude)
     if len(paths) < 100:
         print(f"corpus too small: {len(paths)} files", file=sys.stderr)
         return 1
@@ -279,6 +285,27 @@ def main() -> int:
               f"p95 {reports[family.key]['p95_abs_pct']}% "
               f"(chars/4 median {reports[family.key]['naive_median_abs_pct']}%)")
 
+    # Chat template overhead. For the two local families the wrapper is a literal string and the
+    # real tokenizer is right here, so this is measured. For the OpenAI families the wrapper is
+    # applied server side and cannot be reproduced locally, so the documented constants are
+    # recorded and labelled as documentation rather than measurement.
+    CHATML = "<|im_start|>user\n\n<|im_end|>\n"
+    LLAMA3 = "<|start_header_id|>user<|end_header_id|>\n\n<|eot_id|>"
+    overhead: dict[str, dict] = {}
+    for family in families:
+        if family.key in ("cl100k_base", "o200k_base"):
+            overhead[family.key] = {
+                "per_message": 3, "priming": 3, "source": "vendor-doc",
+                "what": "OpenAI's documented per-message and priming allowance for the chat "
+                        "completions format. Applied server side, so it cannot be measured here."}
+        else:
+            wrapper = CHATML if family.key == "qwen2.5" else LLAMA3
+            role = "ChatML" if family.key == "qwen2.5" else "Llama 3 header"
+            overhead[family.key] = {
+                "per_message": family.encode(wrapper), "priming": 1, "source": "measured",
+                "what": f"{role} wrapper for one message, encoded with the real tokenizer.",
+                "wrapper_repr": repr(wrapper)}
+
     ext_counts: dict[str, int] = {}
     for path in paths:
         ext_counts[path.suffix.lower()] = ext_counts.get(path.suffix.lower(), 0) + 1
@@ -292,7 +319,9 @@ def main() -> int:
             "holdout_files": len(holdout),
             "extensions": dict(sorted(ext_counts.items(), key=lambda kv: -kv[1])),
         },
-        "families": {family.key: {"label": family.label, "accuracy": reports[family.key]}
+        "families": {family.key: {"label": family.label,
+                                  "accuracy": reports[family.key],
+                                  "chat_overhead": overhead[family.key]}
                      for family in families},
         "tables": tables,
     }

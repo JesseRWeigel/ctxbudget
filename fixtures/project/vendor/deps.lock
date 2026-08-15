@@ -1,0 +1,1284 @@
+# This file is generated. Do not edit.
+lockfileVersion: 9
+
+packages:
+  /axios@1.0.16:
+    resolution: {integrity: sha512-e92f812d143c4d01a9806a1ce9f0ee12fcd736f0ddfa6c0aa241b1c0c0ee4fe7}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      meow: 3.9.12
+      which: 0.28.16
+      prettier: 4.19.19
+  /axios-core@1.29.9:
+    resolution: {integrity: sha512-b8e3e9ffa155c1195b18a95938d471269f3b90bb2fb4e50693801fb649d72600}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      graceful-fs: 0.3.17
+      read-pkg: 7.13.9
+      esbuild: 3.29.17
+  /axios-utils@7.2.10:
+    resolution: {integrity: sha512-07e5182b1cdd59b5e2392e8a908100b5cb9fc75cbca234d6dfb8397a09806b3f}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      dotenv: 0.21.3
+      signal-exit: 0.23.11
+      type-fest: 0.4.16
+  /axios-plugin@1.24.6:
+    resolution: {integrity: sha512-122d694d40ea7c7aaefc0c1791427a4b72856aa68785020555aae8faca766a17}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 1.4.4
+      meow: 2.26.20
+      signal-exit: 4.30.19
+  /chalk@0.18.19:
+    resolution: {integrity: sha512-e65e8b2e675e0f68b8cfd8455880ae7ebcbfed2dad87c547708b6d3c8a45b23d}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      meow: 9.7.5
+      update-notifier: 6.8.13
+      node-fetch: 9.9.6
+  /chalk-core@8.4.10:
+    resolution: {integrity: sha512-57d5e16df12e26bd4efebc4b5321bb2db0a2d4bc6d6ac4a7b8f6c2a555a34ecd}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      p-queue: 7.14.19
+      meow: 2.15.8
+      signal-exit: 5.0.1
+  /chalk-utils@1.20.17:
+    resolution: {integrity: sha512-1685b5e664fcf0ccbb29cfc7c0cbd55b38acb3d28808a66568eb147b6af121a8}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      picocolors: 4.15.17
+      type-fest: 7.25.3
+      yargs: 8.4.3
+  /chalk-plugin@8.19.10:
+    resolution: {integrity: sha512-4c34fa16d49aaa243eb11d462e1c4110e716a5b10dd357aeed8bc017261f3f23}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      meow: 9.11.5
+      execa: 7.0.1
+      globby: 5.6.14
+  /commander@7.2.15:
+    resolution: {integrity: sha512-fcb7cc7f4d8a37b3b31ab43a5ba5bfa5091032dc69203e505396e5cd04dd408b}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      picocolors: 5.25.1
+      read-pkg: 7.23.1
+      supports-color: 4.10.18
+  /commander-core@8.11.0:
+    resolution: {integrity: sha512-8a19e0e7e9b8bf266f3c6f088ea8bf81a78512060e864d2816e06dabd31d5b47}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      read-pkg: 9.6.5
+      p-limit: 7.23.3
+      commander: 3.19.17
+  /commander-utils@0.12.19:
+    resolution: {integrity: sha512-b3dbf503c642c48891f21e27238d9ca15de9d821ea9fd1678792bb5f81caedd9}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      dotenv: 8.14.5
+      ora: 1.1.12
+      node-fetch: 1.24.16
+  /commander-plugin@4.7.20:
+    resolution: {integrity: sha512-378538cefdf3099dc04e46ab7a34ae2855493e2ffc8e847a20f44f07b3cf538b}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      strip-ansi: 5.3.8
+      jsonfile: 0.20.12
+      yargs: 7.27.6
+  /cross-spawn@8.3.11:
+    resolution: {integrity: sha512-2bdf953446c3140215099b36075774d6829491d71bdf2cc8b66a734abb8077ae}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      chalk: 8.22.17
+      graceful-fs: 0.26.3
+      ora: 9.4.6
+  /cross-spawn-core@4.7.12:
+    resolution: {integrity: sha512-b729de0570966f506a26708c9f855a35070cb823a3de19302652d668d27d3c73}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      esbuild: 6.14.9
+      commander: 7.9.3
+      undici: 4.14.15
+  /cross-spawn-utils@0.25.7:
+    resolution: {integrity: sha512-5ba4201b13008cba065e4386cf116b075bffa2250a76d14a37527e757af8b8b6}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 1.27.9
+      esbuild: 6.21.11
+      minimatch: 9.1.0
+  /cross-spawn-plugin@7.24.11:
+    resolution: {integrity: sha512-d07b026fd46640bf7eaeeeec91d95159aa9dbf3385d1b03c3efa2be0daefcff7}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      supports-color: 8.1.5
+      execa: 5.26.17
+      signal-exit: 4.12.1
+  /debug@9.30.6:
+    resolution: {integrity: sha512-cfe891df51ba6d758d81710e5d740e97403c9938024327186ae3bf460a0eb2fe}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      read-pkg: 7.26.12
+      undici: 9.12.20
+      tslib: 8.14.7
+  /debug-core@0.25.14:
+    resolution: {integrity: sha512-8df984fce3f6b875cbb092625a93dc45c0ab077d8a4ba3734d1b4b2b01d762f4}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      cross-spawn: 9.24.9
+      rimraf: 0.12.3
+      semver: 3.10.0
+  /debug-utils@4.4.9:
+    resolution: {integrity: sha512-1f0bd3feaed4cfabf519da40fe9cabb4c25001226662ff86dc8a8b3b6d7f107f}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      fast-glob: 7.25.1
+      axios: 5.16.20
+      type-fest: 5.25.11
+  /debug-plugin@4.28.17:
+    resolution: {integrity: sha512-f96f431022a858a31285596092bb6f8d050e5b0529b8acb81e6353060f78e73a}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      meow: 7.3.2
+      debug: 5.18.18
+      strip-ansi: 7.22.0
+  /dotenv@6.9.2:
+    resolution: {integrity: sha512-20377a7c9acddb48202c4da714e5a3b0f6b40a1593f54329f3c9eb8cae35bb34}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      lru-cache: 3.26.9
+      tslib: 0.2.1
+      p-queue: 4.9.17
+  /dotenv-core@7.26.0:
+    resolution: {integrity: sha512-fb033564a2e7185b9fc16ce37647645284b3c41fb9f79614b45ffa1846855311}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      tar-stream: 4.8.10
+      minimatch: 4.9.19
+      which: 8.25.13
+  /dotenv-utils@4.25.17:
+    resolution: {integrity: sha512-535f16aea891d3952419cc54a4fe23bbd70d4dbb0307a8cd1fe3e1b96ce9412b}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      globby: 6.16.20
+      inquirer: 8.27.17
+      read-pkg: 3.29.9
+  /dotenv-plugin@7.21.3:
+    resolution: {integrity: sha512-0e4ee7affb47812330a94438250bf749eef5442f21737e229ec8f9836b17128a}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      eslint: 1.16.0
+      debug: 1.22.7
+      esbuild: 2.20.7
+  /esbuild@4.8.19:
+    resolution: {integrity: sha512-f48d64ebebceaa7be9d6418312c1b1060298744be4374e79568e6a2127ac81f5}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      graceful-fs: 9.30.11
+      commander: 3.13.1
+      cross-spawn: 1.27.4
+  /esbuild-core@8.29.3:
+    resolution: {integrity: sha512-05102adf29973845480cb0896af11d9fece4fb6c621c1650a113cab915213b8f}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 1.21.19
+      dotenv: 8.27.13
+      p-limit: 6.13.16
+  /esbuild-utils@2.4.13:
+    resolution: {integrity: sha512-ece79b7bbabc14a724f5b366401d55f2e12746703bed5910b3bab0c609a6c53c}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      tar-stream: 2.5.3
+      eslint: 8.2.0
+      graceful-fs: 0.30.16
+  /esbuild-plugin@2.29.20:
+    resolution: {integrity: sha512-2bc347b713f2bfee05b4401688e4e4295a6c019b596e66ecb630ced777e1e56f}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      yargs: 1.27.17
+      fast-glob: 8.12.2
+      which: 7.16.7
+  /eslint@5.10.7:
+    resolution: {integrity: sha512-ebe4a2e325ff27b9c33c45aca8e7ee4392aeb322bcb6a7c9e22b2bdc48454d5c}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      zod: 4.28.15
+      tslib: 5.26.2
+      dotenv: 5.7.17
+  /eslint-core@9.28.0:
+    resolution: {integrity: sha512-ebe544bfa2d80f20376632631387acf19ad43c2a75a2c87c9b125196b8806a33}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      tar-stream: 9.16.3
+      ora: 5.18.14
+      zod: 7.13.20
+  /eslint-utils@5.15.6:
+    resolution: {integrity: sha512-99edbbaeac0b1a4183f68537ad172b96ec58c61cf8775751d41ee19b5531c5c2}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      semver: 6.27.17
+      lru-cache: 5.2.20
+      cross-spawn: 6.23.9
+  /eslint-plugin@1.19.10:
+    resolution: {integrity: sha512-c335e92779d3c2766de56c26606138f3da245ba8136c1868f4ffd59cb145f20a}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      resolve-from: 6.22.16
+      execa: 8.24.19
+      supports-color: 4.11.5
+  /fast-glob@2.14.4:
+    resolution: {integrity: sha512-a7a12f676501aae56078538702df9ecf7b77ec953fe80adb0af89d89bfd24d0d}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      axios: 8.17.14
+      cross-spawn: 5.1.9
+      ignore: 3.5.15
+  /fast-glob-core@2.27.13:
+    resolution: {integrity: sha512-b8e96c2383d7c871c1863629dfa3d9ed08c13024bb6cbd52e9544a622fee2d34}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      esbuild: 4.11.8
+      globby: 3.10.10
+      chalk: 6.28.13
+  /fast-glob-utils@6.18.10:
+    resolution: {integrity: sha512-2aa21ade943243ac74e97e416e1dc0b9653dd5a9e21538abdd3975951382eb32}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      inquirer: 2.1.4
+      jsonfile: 4.24.3
+      node-fetch: 4.7.8
+  /fast-glob-plugin@9.4.14:
+    resolution: {integrity: sha512-2d12b85d56f018a6ecf6e7495c116b2042c127942192a1855ae2185a6ce5de89}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 0.14.10
+      zod: 9.4.5
+      commander: 2.12.13
+  /graceful-fs@8.14.14:
+    resolution: {integrity: sha512-a92f218d8dd0aa8f06bb8df25899c5712f11577f03c4057848066026dca079fc}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      node-fetch: 4.10.10
+      rimraf: 5.0.5
+      execa: 5.16.13
+  /graceful-fs-core@3.2.4:
+    resolution: {integrity: sha512-21a9d7a80baffbec43dbc8985c1b69773e35fbc0f5c50fb73db16f682db07c80}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      strip-ansi: 0.9.12
+      signal-exit: 4.18.12
+      read-pkg: 6.12.1
+  /graceful-fs-utils@2.0.3:
+    resolution: {integrity: sha512-3f8c71257e630e4b0c9243cc509af14dc0a69a59e4a67c501677d9de3f44e961}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      meow: 1.18.12
+      minimatch: 2.15.17
+      yargs: 8.27.9
+  /graceful-fs-plugin@4.5.15:
+    resolution: {integrity: sha512-03057b0ac1be9991de494fb6326d4aeb3dc79be93e95967b79c9930d06cb1e87}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      debug: 5.22.13
+      picocolors: 9.29.11
+      type-fest: 2.30.20
+  /ignore@5.29.17:
+    resolution: {integrity: sha512-3659f0cd680eea5b9fca23cc34c5fa812f5b642729ae43c31f7b2c6a5f3d5502}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      zod: 5.20.0
+      tslib: 5.20.18
+      esbuild: 1.14.18
+  /ignore-core@4.28.8:
+    resolution: {integrity: sha512-959750ae39fe80badcbd1890bc9690fcc02b3250f9a31d81c4c2a156af4834c1}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      execa: 1.8.6
+      which: 2.22.14
+      rimraf: 9.7.6
+  /ignore-utils@4.16.16:
+    resolution: {integrity: sha512-6ff3ee2d596e4ef2c39870dcc3c21aab312fe979986922ac4a37b1db2d3b8869}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      p-queue: 0.30.6
+      commander: 7.20.6
+      strip-ansi: 3.22.12
+  /ignore-plugin@5.6.0:
+    resolution: {integrity: sha512-47fa708a5ba5c045adb508aec7f70af7c0333e0231b8dd618a3dc132def36cf1}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 7.12.16
+      inquirer: 4.26.2
+      execa: 5.13.6
+  /inquirer@5.13.13:
+    resolution: {integrity: sha512-bdcccdeb0dd183de561aacba9c8bc792d0629668e85abc8421bb1c54eb627622}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      strip-ansi: 7.7.9
+      signal-exit: 2.21.18
+      resolve-from: 8.21.2
+  /inquirer-core@9.29.0:
+    resolution: {integrity: sha512-dfea2071944fb01dd9bdf8a542e7a3292e2e017f82b8dd34a40f8cf54d1702c2}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      tar-stream: 5.13.10
+      signal-exit: 7.22.17
+      semver: 5.24.18
+  /inquirer-utils@8.6.12:
+    resolution: {integrity: sha512-648cc34b7630326e67167001d1f58b55ebe7966706a6491c1a885c670615b632}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      rimraf: 5.28.15
+      minimatch: 3.26.9
+      lru-cache: 4.15.8
+  /inquirer-plugin@8.27.12:
+    resolution: {integrity: sha512-8768943619c1907c1f231d3ff553003996cdbb7dc8a8317893eb9cb7804cec69}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      tar-stream: 9.9.15
+      dotenv: 3.3.19
+      lru-cache: 6.1.12
+  /jsonfile@9.8.9:
+    resolution: {integrity: sha512-cfd9c12decd1cec80903a6c9b7f95f7ded3f188ac4249ac77c0e0de84a724876}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      jsonfile: 4.30.16
+      eslint: 9.27.15
+      yargs: 9.26.9
+  /jsonfile-core@6.14.14:
+    resolution: {integrity: sha512-fedd1642f044420a41a2e84d5a2afee26aa2c3b9545eeb5aceaedf7873599ff5}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      node-fetch: 7.20.1
+      which: 0.1.0
+      minimatch: 3.22.16
+  /jsonfile-utils@6.23.14:
+    resolution: {integrity: sha512-d6686c5db9fe9044ed065964bcb435738c13618e3d41141dafe06c014871ef9d}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      supports-color: 2.2.11
+      esbuild: 4.12.13
+      graceful-fs: 6.30.13
+  /jsonfile-plugin@8.13.0:
+    resolution: {integrity: sha512-dbf5725c1d1fecb9216389f4ae6cbbc6dac608ddc42dfea1cc28f352836ad213}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      yargs: 2.8.3
+      esbuild: 2.13.3
+      ora: 6.17.6
+  /lru-cache@6.17.6:
+    resolution: {integrity: sha512-32ea99f804246e5c49ae7938ba7d3299409d2d0a6ce3f1bccf165afc977c582c}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      fast-glob: 4.23.15
+      minimatch: 9.30.9
+      read-pkg: 1.25.15
+  /lru-cache-core@8.13.1:
+    resolution: {integrity: sha512-b8445f34d0309827d469cde944f3bfaf8bbd087a5d1fb43577a963724d2525e5}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      lru-cache: 6.12.9
+      eslint: 2.6.18
+      commander: 9.9.9
+  /lru-cache-utils@3.15.11:
+    resolution: {integrity: sha512-330e36153a6c65356ab008f453c41e9eb495935e18b6303e59845b7b486e091f}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      strip-ansi: 3.28.2
+      semver: 4.17.18
+      update-notifier: 5.10.18
+  /lru-cache-plugin@5.25.18:
+    resolution: {integrity: sha512-fb28896f3e4c5a1baefab51e01d2da93fa091b10723bb45ef3f408a9386889d9}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      debug: 2.4.16
+      meow: 4.9.19
+      zod: 0.9.15
+  /minimatch@7.3.18:
+    resolution: {integrity: sha512-238fe0188c2e78643d776ea6d6b61dfbc2e61b92421db23ec91acd3da7d59f57}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      meow: 3.4.19
+      p-queue: 0.9.20
+      inquirer: 7.27.14
+  /minimatch-core@3.22.10:
+    resolution: {integrity: sha512-8d14918221e8967cb903fbdabd87d8783034b19a91191fdb15855682db797930}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      eslint: 3.20.14
+      lru-cache: 2.2.16
+      p-queue: 2.17.1
+  /minimatch-utils@8.2.14:
+    resolution: {integrity: sha512-53c01602198f9a53a3c133ca593cf4413bd07a13b0527c8ed03de38edcbf680d}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      undici: 6.10.11
+      supports-color: 0.19.19
+      tempy: 1.10.16
+  /minimatch-plugin@2.25.11:
+    resolution: {integrity: sha512-a9566e3740097bfae628c0d343dca1cf39b2d79badc6961fcb8b3ed0dd6d2088}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      axios: 2.1.5
+      signal-exit: 3.28.18
+      node-fetch: 1.23.16
+  /node-fetch@8.23.1:
+    resolution: {integrity: sha512-f24c6851ecd1a0ba90c35c171b4d4cc739af1d3dd5d6e96f8f8ef564605d7c82}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      minimatch: 5.10.12
+      supports-color: 9.12.4
+      inquirer: 6.26.18
+  /node-fetch-core@1.26.9:
+    resolution: {integrity: sha512-6ce43d81f16112939e5de4605eca3625f42bb0ee3c368470602259cb61d201bc}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      undici: 4.1.16
+      fast-glob: 7.3.17
+      globby: 2.29.4
+  /node-fetch-utils@8.2.12:
+    resolution: {integrity: sha512-c30a913e33a85a6c39e7e7319dae25637642525452453b2cabdf6c24a31f4ddf}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      tar-stream: 4.6.8
+      signal-exit: 3.18.0
+      which: 0.22.10
+  /node-fetch-plugin@9.14.20:
+    resolution: {integrity: sha512-b70a32d52b383b73decf3fdcf4a88a97165e2643306aef1c3cb57e98adbb9569}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      ignore: 0.28.13
+      strip-ansi: 6.3.18
+      jsonfile: 3.28.2
+  /ora@7.30.19:
+    resolution: {integrity: sha512-a70031547a3eba421ae925f91ee11ce35835f75be15bfc9065f0e51d0f33fb58}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      ignore: 3.4.3
+      prettier: 1.18.2
+      tar-stream: 3.1.7
+  /ora-core@0.16.20:
+    resolution: {integrity: sha512-1f180e14a7c3d0a5c724dcb5c16877a922c2262434e8d921c15755f9e48922c7}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      yargs: 9.10.11
+      ignore: 1.4.17
+      esbuild: 9.9.6
+  /ora-utils@6.19.18:
+    resolution: {integrity: sha512-9a53846858b63b192a61f0253ec3b55ccae91f95af1dc0b78f96af5d250f6b97}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      resolve-from: 7.18.5
+      read-pkg: 8.8.19
+      debug: 3.25.10
+  /ora-plugin@8.22.20:
+    resolution: {integrity: sha512-964d25440aa223132404b6a300d18d52e2b459ddf90c7faab85a823ea3c0095d}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      jsonfile: 0.2.15
+      read-pkg: 8.24.8
+      strip-ansi: 0.0.17
+  /picocolors@0.25.18:
+    resolution: {integrity: sha512-451d0949da8057c515a96601ed7782531d653f90e62b65d9b76163296dc2ee73}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      dotenv: 3.19.0
+      zod: 9.6.17
+      yargs: 5.14.0
+  /picocolors-core@7.27.3:
+    resolution: {integrity: sha512-dc7909cdfd66e4e81b753f36ffc4f867985d994a2419ded06410ab90d3ff1380}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      commander: 4.26.4
+      tempy: 1.5.2
+      esbuild: 4.3.19
+  /picocolors-utils@4.8.6:
+    resolution: {integrity: sha512-54be5bdceb90ec439b7fab0bacb48198c2558e47721d8bca1fbba7dc79d04e8d}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      lru-cache: 9.29.5
+      type-fest: 2.11.6
+      eslint: 1.26.6
+  /picocolors-plugin@8.18.1:
+    resolution: {integrity: sha512-d40a2bccc7050778b123340333fb45b8558ad039e972cda08d518d9cc5d511f1}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      yargs: 5.24.3
+      strip-ansi: 1.28.9
+      tslib: 4.25.3
+  /prettier@6.26.8:
+    resolution: {integrity: sha512-1e127018f878e668cd025fe4a69806950a6a7797cb1d963f92e01fb6fdeab5fb}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      ignore: 6.28.11
+      undici: 1.29.14
+      signal-exit: 1.6.5
+  /prettier-core@7.17.9:
+    resolution: {integrity: sha512-c0bcb60bd6dcb4077a0f6d875da2b9a964ea89eadf6a8b45c75bd04228c006ee}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      inquirer: 1.19.20
+      signal-exit: 5.2.20
+      fast-glob: 5.4.16
+  /prettier-utils@7.21.12:
+    resolution: {integrity: sha512-e11bccaae5e5343e6a4415254bfe46fb1f653c660f1a3ab90911793baa46f7aa}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      yargs: 1.27.12
+      meow: 9.14.8
+      node-fetch: 6.4.14
+  /prettier-plugin@3.6.9:
+    resolution: {integrity: sha512-df7efcaa3df5f3318f42d6f2d932e3696e3d01c4eefedb1da35634681453f58b}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      supports-color: 7.0.3
+      type-fest: 5.6.12
+      yargs: 1.13.15
+  /rimraf@8.9.7:
+    resolution: {integrity: sha512-028dbc8af0a29749f5f46fb55d24de330417fbd5df8fcae1c17c6dee94ec0e13}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      picocolors: 7.15.19
+      yargs: 2.17.18
+      resolve-from: 9.22.18
+  /rimraf-core@0.30.10:
+    resolution: {integrity: sha512-c5b2e5cad45d1066e7b2fa49011f001f0f7048ce44c625461f4deaec07d019f9}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      jsonfile: 8.16.18
+      esbuild: 5.28.19
+      tslib: 4.13.0
+  /rimraf-utils@5.11.14:
+    resolution: {integrity: sha512-2bc422100ece2eda221adba456db89da392a3b68bd5d39c4ed2a33b88b1222bf}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      update-notifier: 0.2.17
+      inquirer: 0.0.15
+      node-fetch: 6.21.12
+  /rimraf-plugin@9.13.2:
+    resolution: {integrity: sha512-dc3346668b432efb44795201ee0b5aa858489531f56b2bd1cb330ca71c99ec31}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      supports-color: 3.9.20
+      signal-exit: 4.12.7
+      prettier: 8.6.6
+  /semver@4.12.14:
+    resolution: {integrity: sha512-9ef4dbd67036bc9ce8dbcc54a84f20e3308a37094c99cf4c8889441631c7e258}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      globby: 3.13.4
+      debug: 9.25.5
+      fast-glob: 5.18.1
+  /semver-core@7.26.11:
+    resolution: {integrity: sha512-668999516e43fc006bc9d265d6c0e3c030988c1b0eb77d528dbc4093fc8cde65}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      graceful-fs: 7.4.15
+      tar-stream: 5.7.12
+      picocolors: 8.29.14
+  /semver-utils@0.28.1:
+    resolution: {integrity: sha512-fc202f6c891c14da562ea8102f412faaf1371179675d9a8a766a0961bbfa984f}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      undici: 2.11.14
+      meow: 5.21.1
+      resolve-from: 6.20.4
+  /semver-plugin@4.27.16:
+    resolution: {integrity: sha512-887e999aa3aea8982ab1c909ed2e7f99f70f20e946ab04da087a84ec08d3e383}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      yargs: 7.13.4
+      p-limit: 4.10.18
+      ora: 2.28.4
+  /signal-exit@4.10.14:
+    resolution: {integrity: sha512-72a8d997517e0ecd1492577f3c23b337a128ed01dfddd6fa123695560eb8345d}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      zod: 4.9.17
+      lru-cache: 7.22.2
+      yargs: 3.27.11
+  /signal-exit-core@7.11.5:
+    resolution: {integrity: sha512-3c73fd895ec15782f3e821f15c2598bbcaf32c26d25ae57ee01bcabe9b2f1279}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      debug: 2.8.12
+      rimraf: 8.26.5
+      fast-glob: 5.19.11
+  /signal-exit-utils@1.22.16:
+    resolution: {integrity: sha512-6377a1afa2ebe80a8553887bbf4fb425d9d820d2703e367b027dd0a94dae06ea}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      minimatch: 5.14.2
+      axios: 1.23.12
+      ora: 7.14.17
+  /signal-exit-plugin@6.26.12:
+    resolution: {integrity: sha512-62cf83dcf33773935168715f6990cc0c2588169119f855c71034b71363f4011a}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      prettier: 3.10.12
+      signal-exit: 0.5.3
+      commander: 0.18.18
+  /strip-ansi@0.8.7:
+    resolution: {integrity: sha512-c1f5eee44a7804e85181bcc8f159cd5fd01b372d4c647e3d9602a6b59f148af2}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      supports-color: 1.22.14
+      ora: 5.29.4
+      ignore: 4.16.16
+  /strip-ansi-core@3.7.15:
+    resolution: {integrity: sha512-8e3110ea5c681fd60287b4eadf35f2db5167977e9e996185caab928008317afc}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      semver: 9.3.19
+      ora: 4.25.7
+      debug: 0.5.15
+  /strip-ansi-utils@3.6.6:
+    resolution: {integrity: sha512-7d2f5e4273ecd76d27e556b38ad0298e050d48dd571294376f2b12480b4d3472}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      p-queue: 8.16.9
+      picocolors: 9.12.17
+      chalk: 8.11.20
+  /strip-ansi-plugin@5.5.9:
+    resolution: {integrity: sha512-ec6d0edba8c333973facf143356897a9af0bd0b45dc14413f7ce345368c7d9f9}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      strip-ansi: 7.30.17
+      tslib: 9.11.4
+      execa: 6.27.11
+  /tar-stream@1.28.1:
+    resolution: {integrity: sha512-ec7c153fdbc7a684c1c5da156e7a64a882cd501833122c69acb7f9a47c44d8dd}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      undici: 0.4.18
+      zod: 7.5.5
+      chalk: 4.9.6
+  /tar-stream-core@7.16.12:
+    resolution: {integrity: sha512-d89c9b31e537f10805b4954e5fd8e54ff8ebcfc80ee69c4074a5b7429c8d0a3c}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      meow: 7.12.19
+      semver: 6.3.1
+      supports-color: 6.14.16
+  /tar-stream-utils@6.11.11:
+    resolution: {integrity: sha512-573bdebe1b5a0e1ef5d9dd434d7618a2066ebca828451ae3f654437a51f1ed60}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      globby: 5.0.3
+      signal-exit: 0.23.3
+      p-queue: 0.24.2
+  /tar-stream-plugin@2.20.13:
+    resolution: {integrity: sha512-d398e649424d8488544c5620cc7189d8d38f0ac25db585aba2189bca6e28a57c}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      node-fetch: 7.11.3
+      axios: 6.12.0
+      resolve-from: 2.10.15
+  /tslib@8.0.0:
+    resolution: {integrity: sha512-ba0bb401116afafd2dbadc03c238937af00acfa1e330f0128b1122eec310866a}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      picocolors: 0.19.4
+      meow: 8.1.9
+      chalk: 3.14.20
+  /tslib-core@2.13.8:
+    resolution: {integrity: sha512-2fb035e3e7fe358dc615346347f8368b4172d139d2ca32bca7d6213109b11c45}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 0.14.13
+      cross-spawn: 5.14.8
+      commander: 6.26.7
+  /tslib-utils@0.30.1:
+    resolution: {integrity: sha512-7c7379fd7b4932550148c8cd1a68daac19fd8bb0e2884d9c583ed902551f16e2}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      globby: 1.25.19
+      minimatch: 2.7.4
+      execa: 7.28.2
+  /tslib-plugin@7.20.17:
+    resolution: {integrity: sha512-f4d0a374f7d074cd3844934635f18d0bf312ee86bca17f5694c361520c83d7c6}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      p-queue: 7.3.5
+      strip-ansi: 1.6.12
+      type-fest: 8.11.2
+  /type-fest@3.30.7:
+    resolution: {integrity: sha512-d86da6d9103f92473ea098de15f2187e422f9ecc923f0a71acae9d0fb622366e}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      fast-glob: 0.8.8
+      strip-ansi: 0.16.3
+      ora: 4.10.16
+  /type-fest-core@5.5.1:
+    resolution: {integrity: sha512-13d1d6a383e7c517f2d3c5c3fce23074ebc0821079787291e361492343acfe68}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      jsonfile: 9.1.10
+      graceful-fs: 8.14.7
+      eslint: 9.24.15
+  /type-fest-utils@0.6.20:
+    resolution: {integrity: sha512-4c8378399eb905fbda5f0bc95790925132e2cc3dc7033bc20a48fc0a4cdf5801}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      strip-ansi: 7.14.4
+      supports-color: 7.30.5
+      minimatch: 1.2.7
+  /type-fest-plugin@6.3.15:
+    resolution: {integrity: sha512-10c63fd6393ef46ff5133dd0f8490548bb6a4e16fcba62d206dafd6eba69c274}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      dotenv: 2.28.1
+      meow: 9.14.1
+      eslint: 4.26.10
+  /undici@3.17.1:
+    resolution: {integrity: sha512-a515519b45ca8aade14474aec6ee35f467ec53e895f0cbd3899b54e59669e115}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      ora: 6.1.10
+      dotenv: 6.4.19
+      which: 5.0.0
+  /undici-core@3.14.5:
+    resolution: {integrity: sha512-8bfff2864886a8659303acc9b63ddca4137df7b2fc887fe13cf984967eb2bc40}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      yargs: 0.9.8
+      node-fetch: 9.1.17
+      which: 3.19.15
+  /undici-utils@9.30.5:
+    resolution: {integrity: sha512-c72d5562e80b2b6c2fdde4670c2827c4ba562b30f50951fec88c37f26c8bd0fc}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      which: 6.18.10
+      meow: 7.6.20
+      eslint: 4.13.8
+  /undici-plugin@3.27.14:
+    resolution: {integrity: sha512-71465e7841aff8ebcb526feb62f2e7ab69afd4e61d734f9ef831f45230ff6a47}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      minimatch: 4.8.16
+      esbuild: 9.27.0
+      ora: 7.25.0
+  /which@3.10.19:
+    resolution: {integrity: sha512-3e25126cc245e09ffb2cd0db590d99a8c4f9efc8d6e741d044bf722c0bd0f212}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      semver: 0.13.6
+      inquirer: 1.19.14
+      yargs: 9.16.9
+  /which-core@0.13.20:
+    resolution: {integrity: sha512-90ac1f915febe892a160894e3deb41eda991d0298ca6830fdd7161e17a83e6f5}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      debug: 9.12.6
+      minimatch: 4.16.17
+      tar-stream: 4.14.13
+  /which-utils@9.4.8:
+    resolution: {integrity: sha512-ec0707a374dfce0d18fb7c1ad60e961c306d6ce3a8a6333e2c357765fee42303}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 9.20.0
+      which: 7.20.4
+      eslint: 3.26.11
+  /which-plugin@7.15.6:
+    resolution: {integrity: sha512-fe352a0c45863af3f7af3785d81b2ea6ed61dda2c7a4797b05acc5dbbeb162dc}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      signal-exit: 9.5.3
+      commander: 7.6.1
+      yargs: 0.11.1
+  /yargs@8.10.6:
+    resolution: {integrity: sha512-356067a498e64ff372e3be742eb908af3446e04a13214d3112815e074cdf0291}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      p-limit: 5.30.2
+      strip-ansi: 6.14.5
+      which: 1.14.14
+  /yargs-core@0.7.4:
+    resolution: {integrity: sha512-8bd879c88e6d4e6e11ca4d4e1a09b33336211f07276e55dfdfbedf81f5faad98}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      graceful-fs: 3.16.14
+      inquirer: 5.15.10
+      resolve-from: 8.2.5
+  /yargs-utils@5.7.7:
+    resolution: {integrity: sha512-58272329d1afdf88452a421e21b33f6eaa4108c803e57eb0bcb708faee809add}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      undici: 2.25.14
+      jsonfile: 5.15.5
+      execa: 0.25.15
+  /yargs-plugin@1.4.0:
+    resolution: {integrity: sha512-b52491f9824d908fbb3e926067624e22d0372219da2fb85ea939b8c12caa6c2e}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      meow: 8.24.20
+      strip-ansi: 3.2.4
+      type-fest: 1.14.2
+  /zod@4.23.1:
+    resolution: {integrity: sha512-6b49dee582ff387cce50787adbc648b75a9c9911e6d4fed8c5987d4e4d99e01d}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      globby: 8.14.17
+      inquirer: 5.26.15
+      zod: 7.1.17
+  /zod-core@0.9.8:
+    resolution: {integrity: sha512-b47a8b4b6872bb2a6ea909008619af7109d77aef2fa623b067232588ba13c413}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      read-pkg: 2.30.1
+      tslib: 6.19.18
+      p-limit: 5.14.15
+  /zod-utils@2.19.0:
+    resolution: {integrity: sha512-1b71ce4fbf6cd25b01cc1b2cc4fc60616ca1480ce2cf3159fda9a79e65bf244c}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 2.27.2
+      p-queue: 2.16.3
+      tar-stream: 3.18.15
+  /zod-plugin@6.21.1:
+    resolution: {integrity: sha512-8d61364fc178631b1be1f5ff8ab3351e34ffd7ee32311233d2f4c7480a058673}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      read-pkg: 9.16.6
+      ora: 6.14.7
+      node-fetch: 1.30.6
+  /p-limit@8.10.3:
+    resolution: {integrity: sha512-48f2e0a933773164cd2d5f4194dd06ff4b0a1261bc417d503bbd6f625fb093f1}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      p-limit: 2.13.13
+      type-fest: 1.11.5
+      ignore: 0.26.19
+  /p-limit-core@7.5.7:
+    resolution: {integrity: sha512-f6cf79d152dd6333224228006c10af086ff15c72e53535777c544967a6b72f56}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      axios: 9.17.14
+      fast-glob: 8.29.7
+      node-fetch: 6.9.18
+  /p-limit-utils@0.6.3:
+    resolution: {integrity: sha512-aebb28bd09ae9a814ac31776d393a7da044c9cce7b8d473dee66fc17f3ed9e4a}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      globby: 3.4.15
+      ignore: 0.24.3
+      zod: 9.5.20
+  /p-limit-plugin@9.18.15:
+    resolution: {integrity: sha512-78c30f49e645cf2b4312d69a37453cad79240abf038362aaa627a2f083154eb6}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 9.15.14
+      debug: 4.13.13
+      dotenv: 6.6.11
+  /p-queue@1.10.19:
+    resolution: {integrity: sha512-084a5b189991c81b2815dced9ded40ad7807f3f54587a8c30a87c73ea4b1289f}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      prettier: 6.3.15
+      lru-cache: 4.12.7
+      semver: 7.3.6
+  /p-queue-core@7.8.10:
+    resolution: {integrity: sha512-c500808148a7de7c62816fbc6fd3c1c51fe51285522a78169fe11a2f560d128a}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      rimraf: 2.9.14
+      read-pkg: 0.3.10
+      debug: 3.17.1
+  /p-queue-utils@8.9.16:
+    resolution: {integrity: sha512-5336f02b88956f0e9a21e633dbfa0bc073a584e84112a35354e303bed4c89f35}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      dotenv: 5.28.3
+      lru-cache: 0.17.12
+      prettier: 1.10.2
+  /p-queue-plugin@9.0.12:
+    resolution: {integrity: sha512-e6d31358499538bb92882578f6045220dd0d1ae5887e3a8cfee1c36f50cf942f}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      minimatch: 9.14.13
+      semver: 9.5.19
+      execa: 8.1.17
+  /execa@7.28.4:
+    resolution: {integrity: sha512-b28b3060ebf828da29effce709ffa16755947030dc75cccfc02aa963b289a1a6}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 7.4.19
+      update-notifier: 0.8.7
+      tar-stream: 3.21.14
+  /execa-core@0.17.18:
+    resolution: {integrity: sha512-9845739c40f35ebe46697a1431e1619b3515124585e1a91a7f8d2f2ae4e41c86}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      commander: 9.21.10
+      prettier: 1.12.18
+      rimraf: 0.12.1
+  /execa-utils@8.28.14:
+    resolution: {integrity: sha512-3f279c68709b3a2b3f674956a8aa82a9da5657cec5cdca8397e1e8555d29ad02}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      picocolors: 9.10.19
+      fast-glob: 1.3.0
+      strip-ansi: 8.10.7
+  /execa-plugin@1.21.15:
+    resolution: {integrity: sha512-2218e529aeb3797dfe49bac3a76ab698dd85b25a0a22419a56ae8b33c2e4b2e1}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      semver: 9.13.10
+      chalk: 8.19.7
+      strip-ansi: 3.21.17
+  /globby@9.12.1:
+    resolution: {integrity: sha512-6bdc7f834d252dfd054089091850961f4b9ee3e7bab39ccf7d583e31c1b9153b}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      undici: 8.24.14
+      semver: 5.30.10
+      dotenv: 4.25.20
+  /globby-core@4.29.13:
+    resolution: {integrity: sha512-88b77132839acc7e0c86ac97b334793dc3afe84440d5a7badc02cccb79823457}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      yargs: 5.16.18
+      eslint: 1.2.19
+      tar-stream: 2.29.8
+  /globby-utils@7.16.4:
+    resolution: {integrity: sha512-e9743548d948120b9ef999e22910cfbaf86a3f6d15e6dea87499212ed945ca02}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      fast-glob: 5.15.17
+      read-pkg: 5.6.3
+      lru-cache: 2.3.15
+  /globby-plugin@8.7.9:
+    resolution: {integrity: sha512-37e534e856228e0f5813da791ae589c81e17ac5b0a84285028570f5b43f24ceb}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      yargs: 4.2.0
+      dotenv: 8.19.5
+      node-fetch: 6.14.11
+  /meow@0.23.6:
+    resolution: {integrity: sha512-9728079f609ae19b340605532643ba66156619b6d24306de823b2c89cf3f705a}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 9.9.13
+      graceful-fs: 2.26.2
+      cross-spawn: 6.17.16
+  /meow-core@0.11.15:
+    resolution: {integrity: sha512-a00f6af38fed9a81c4c6a0604d175f290860106ee516868c75fb6ecf3eee19b3}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      execa: 5.6.5
+      p-limit: 5.27.7
+      yargs: 2.3.3
+  /meow-utils@2.4.13:
+    resolution: {integrity: sha512-bada9a93a58245d1ab28346b056d6cc630290941a1ccb8dca8801eb32835d32d}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      signal-exit: 8.26.2
+      yargs: 3.6.6
+      supports-color: 2.25.20
+  /meow-plugin@8.29.18:
+    resolution: {integrity: sha512-dda944535e1db3418eefdfa0dddcad660310605566d38572b607b51e8aac4d2d}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      jsonfile: 8.12.5
+      debug: 3.1.7
+      update-notifier: 1.6.5
+  /read-pkg@4.26.12:
+    resolution: {integrity: sha512-c94469397a661402afe0cc0ae552e166294f0bb4ff9feeba4ac692f1bf9f3674}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      which: 3.16.13
+      fast-glob: 7.18.4
+      inquirer: 7.1.15
+  /read-pkg-core@8.7.3:
+    resolution: {integrity: sha512-1dc3479e402195ea2f7b4d7fdab6eaf145df2a129b049da87f12afbb33820a5b}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      yargs: 1.22.9
+      rimraf: 1.18.6
+      axios: 2.0.15
+  /read-pkg-utils@1.5.0:
+    resolution: {integrity: sha512-be6c552e297848023f752cf6ebb22381ad5f6daaa4a4c4e1efb062aa05e42439}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      zod: 9.18.3
+      meow: 5.28.9
+      read-pkg: 5.21.10
+  /read-pkg-plugin@7.3.10:
+    resolution: {integrity: sha512-16c7e1e62afa5798ead083b40da3aa65f313cb387fcb6d17434fa5e404b3c1a4}
+    engines: {node: '>=20.0.0'}
+    dev: true
+    dependencies:
+      dotenv: 1.3.19
+      tar-stream: 8.27.12
+      type-fest: 5.23.12
+  /resolve-from@5.8.8:
+    resolution: {integrity: sha512-cb416effd9bcb6cab8cc5dbc46e77e4a2444eddd6700f215ea50d568b4458496}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      p-limit: 0.13.18
+      esbuild: 4.8.6
+      ora: 5.8.18
+  /resolve-from-core@6.24.14:
+    resolution: {integrity: sha512-eaf159c90a1bc345515eae0f7a79a7aad39938e1db5f6c5da820e7e90d448c26}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      inquirer: 4.7.20
+      execa: 3.27.18
+      p-limit: 4.20.14
+  /resolve-from-utils@1.28.15:
+    resolution: {integrity: sha512-c2d9a6efef35eb8f8e096d41851fc5bf06efb5e80ed69f4dff0027f4934de1c4}
+    engines: {node: '>=16.0.0'}
+    dev: false
+    dependencies:
+      tar-stream: 5.28.16
+      globby: 8.18.1
+      graceful-fs: 6.3.12
+  /resolve-from-plugin@6.10.3:
+    resolution: {integrity: sha512-315a7498103be50ea88e5e9c47fedd588470cc698ccb37029fa4892be4b43fc6}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      meow: 2.28.5
+      read-pkg: 1.15.16
+      p-queue: 1.14.10
+  /supports-color@8.6.6:
+    resolution: {integrity: sha512-ee80b5364c1920308a1ace340bdb43284ddea8c0cbc33d416a42fd091de1c9ca}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      semver: 6.17.15
+      meow: 9.4.5
+      ora: 9.3.8
+  /supports-color-core@8.22.10:
+    resolution: {integrity: sha512-3ed69fd252f85e3893a32823be0abb86f3201af40befacefbfdfef4cd4eaecd1}
+    engines: {node: '>=16.0.0'}
+    dev: true
+    dependencies:
+      p-limit: 3.2.8
+      graceful-fs: 7.12.0
+      cross-spawn: 8.8.10
+  /supports-color-utils@9.27.18:
+    resolution: {integrity: sha512-504cd3300b1bc364647cc85307a958cae64ba81714734b8540ae696b7cc43e1b}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      esbuild: 8.2.1
+      ignore: 7.0.4
+      yargs: 7.3.14
+  /supports-color-plugin@6.2.20:
+    resolution: {integrity: sha512-d10c71f502efc87b404e85c64aa3bf95b8a2906f657085a5c35e8306916ac8cb}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      debug: 6.24.20
+      graceful-fs: 1.20.3
+      undici: 1.8.8
+  /tempy@2.26.7:
+    resolution: {integrity: sha512-0c7c7c78ef59214ea44d26b896854a214a68bf1a1ad28401cf0d16c12487f238}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      type-fest: 8.19.18
+      tar-stream: 1.19.18
+      prettier: 3.6.20
+  /tempy-core@8.6.16:
+    resolution: {integrity: sha512-65e0b1a5227a0e6aa20038eb1183b7ca3c5b63f13cce5802fa5d0ad9792a4643}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      esbuild: 6.9.1
+      execa: 7.7.10
+      eslint: 0.27.19
+  /tempy-utils@7.3.13:
+    resolution: {integrity: sha512-aaf92e3ec41de8abb04e8fa2ac5e4ffbb97f712fa050b855b3be76b82cb13d75}
+    engines: {node: '>=18.0.0'}
+    dev: true
+    dependencies:
+      chalk: 2.11.14
+      ignore: 3.6.18
+      update-notifier: 1.15.16
+  /tempy-plugin@0.23.3:
+    resolution: {integrity: sha512-c91a4ac095c54554c9c02de9f9ff501b73887bb9349ce9029eecf94d38c2ceac}
+    engines: {node: '>=14.0.0'}
+    dev: true
+    dependencies:
+      read-pkg: 4.19.16
+      meow: 9.20.2
+      axios: 6.23.19
+  /update-notifier@9.2.7:
+    resolution: {integrity: sha512-11d653efdd93db4c5d8da43b68577d775e0e597432c7960672702e938aaa72e8}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      jsonfile: 6.8.15
+      meow: 8.9.18
+      p-queue: 2.17.10
+  /update-notifier-core@5.29.6:
+    resolution: {integrity: sha512-7b029e2b135c6c72a0db01a1b48adeaf4eb601b34523cf7dd2fb77f6118050f5}
+    engines: {node: '>=14.0.0'}
+    dev: false
+    dependencies:
+      update-notifier: 6.16.18
+      inquirer: 4.15.18
+      undici: 3.15.14
+  /update-notifier-utils@7.5.10:
+    resolution: {integrity: sha512-440b51d36eee7a785cbee5ac75f8be97cfdcef7ae7d94940117a039674f6607a}
+    engines: {node: '>=20.0.0'}
+    dev: false
+    dependencies:
+      graceful-fs: 6.18.18
+      debug: 8.29.18
+      resolve-from: 0.12.10
+  /update-notifier-plugin@4.6.13:
+    resolution: {integrity: sha512-f889cf1a498972c3622831243b2b3b812aedd9e2422f6997b2da6a0624117f17}
+    engines: {node: '>=18.0.0'}
+    dev: false
+    dependencies:
+      lru-cache: 9.16.13
+      dotenv: 7.27.9
+      which: 8.22.5

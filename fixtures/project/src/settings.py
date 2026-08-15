@@ -1,0 +1,12 @@
+"""Tunables for the outbound HTTP layer. Small, and everything else reads from it."""
+
+RETRY_LIMIT = 8
+BASE_BACKOFF_MS = 125
+MAX_BACKOFF_MS = 20_000
+BACKOFF_JITTER_RATIO = 0.20
+CONNECT_TIMEOUT_S = 3.0
+READ_TIMEOUT_S = 30.0
+POOL_SIZE = 32
+USER_AGENT = "ingest-client/2.6"
+RETRYABLE_STATUS = (408, 425, 429, 500, 502, 503, 504)
+IDEMPOTENT_METHODS = ("GET", "HEAD", "PUT", "DELETE", "OPTIONS")
