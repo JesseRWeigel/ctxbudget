@@ -37,6 +37,12 @@
    "qwen2.5": 343,
    "llama3": 372
   },
+  "lockfile.txt": {
+   "cl100k_base": 1816,
+   "o200k_base": 1768,
+   "qwen2.5": 2114,
+   "llama3": 1815
+  },
   "minified.js": {
    "cl100k_base": 431,
    "o200k_base": 435,

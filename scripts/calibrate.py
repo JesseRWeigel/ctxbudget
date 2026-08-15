@@ -184,16 +184,15 @@ def fit_family(family: Family, train: list[Path]) -> dict[str, float]:
     # a bucket contains both " the" and " Rueckwaertskompatibilitaet" and the first one is what
     # real text is mostly made of. An unweighted mean over distinct chunks was measured at 30
     # percent median error, three times worse than dividing characters by four.
-    frequency: dict[str, int] = {}
+    frequency: dict[tuple[str, str], int] = {}
     for path in train:
         text = read_text(path)
         if text is None:
             continue
-        for chunk in pretok.chunks(text):
-            frequency[chunk] = frequency.get(chunk, 0) + 1
+        for chunk, cls, _ in pretok.walk(text):
+            frequency[(chunk, cls)] = frequency.get((chunk, cls), 0) + 1
 
-    for chunk, occurrences in frequency.items():
-        cls = pretok.classify(chunk)
+    for (chunk, cls), occurrences in frequency.items():
         nbytes = len(chunk.encode("utf-8"))
         ntok = family.encode(chunk)
         key = pretok.bucket_key(cls, nbytes)

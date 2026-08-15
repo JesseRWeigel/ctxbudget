@@ -50,7 +50,9 @@ PUNCT_ASCII = "punct_ascii"
 PUNCT_WIDE = "punct_wide"
 SPACE = "space"
 
-CLASSES = (WORD_ASCII, WORD_WIDE, WORD_CJK, NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE)
+RANDOM = "random"
+
+CLASSES = (WORD_ASCII, WORD_WIDE, WORD_CJK, NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE, RANDOM)
 
 # Byte length at which each class stops getting its own bucket and switches to a per-byte tail
 # rate. Chosen so that every bucket below the cap is populated by the calibration corpus.
@@ -62,7 +64,30 @@ CAPS = {
     PUNCT_ASCII: 10,
     PUNCT_WIDE: 8,
     SPACE: 10,
+    RANDOM: 12,
 }
+
+# A long alphanumeric run with both letters and digits in it: an integrity hash, a base64 blob,
+# a content-addressed filename, a minified identifier table. BPE has never seen these sequences,
+# so it falls back to very short pieces and they cost two to three bytes per token instead of
+# the four to six an English word costs.
+#
+# The reason this needs its own class rather than a per-byte surcharge: the split regex shreds a
+# hash into many SHORT chunks, alternating letter runs and digit runs of at most three, none of
+# them long enough to reach a tail rate. Priced from the ordinary buckets they look like little
+# words and cost about one token each, and measured against a real package-lock.json that
+# under-counted by 21 percent. Classifying by the run a chunk sits inside, rather than by the
+# chunk alone, is what fixes it.
+_RANDOM_RUN = re.compile(r"[A-Za-z0-9+/=_-]{20,}")
+
+
+def random_spans(text: str) -> list[tuple[int, int]]:
+    spans = []
+    for match in _RANDOM_RUN.finditer(text):
+        body = match.group(0)
+        if any(ch.isdigit() for ch in body) and any(ch.isalpha() for ch in body):
+            spans.append(match.span())
+    return spans
 
 # Han, Hiragana, Katakana, Hangul and the CJK punctuation around them. Splitting these out of
 # the general non-ASCII class was worth doing: a run of Japanese has no spaces in it, so the
@@ -123,6 +148,25 @@ def tail_key(cls: str) -> str:
     return f"{cls}:tail"
 
 
+def walk(text: str):
+    """Yield (chunk, class, byte length) for the whole text.
+
+    The one place classification happens, so the calibration and the runtime estimate cannot
+    drift apart. Position matters here: a chunk inside a hash is priced differently from the
+    identical chunk in a sentence.
+    """
+    spans = random_spans(text)
+    index = 0
+    for match in PATTERN.finditer(text):
+        chunk = match.group(0)
+        start, end = match.span()
+        while index < len(spans) and spans[index][1] <= start:
+            index += 1
+        inside = index < len(spans) and spans[index][0] <= start and end <= spans[index][1]
+        cls = RANDOM if inside else classify(chunk)
+        yield chunk, cls, len(chunk.encode("utf-8"))
+
+
 def features(text: str) -> dict[str, float]:
     """Count the buckets in a piece of text.
 
@@ -132,9 +176,7 @@ def features(text: str) -> dict[str, float]:
     touching this function.
     """
     counts: dict[str, float] = {}
-    for chunk in chunks(text):
-        cls = classify(chunk)
-        nbytes = len(chunk.encode("utf-8"))
+    for _, cls, nbytes in walk(text):
         key = bucket_key(cls, nbytes)
         counts[key] = counts.get(key, 0.0) + 1.0
         cap = CAPS[cls]

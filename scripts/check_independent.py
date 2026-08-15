@@ -205,15 +205,59 @@ def split(text: str) -> list[str]:
     return chunks
 
 
+def random_runs(text: str) -> list[tuple[int, int]]:
+    """Spans of 20 or more alphanumeric characters holding both a letter and a digit.
+
+    Found by walking the string, not with a regular expression. These are integrity hashes,
+    base64 blobs and content-addressed names, and the chunks inside them cost far more per byte
+    than the identical chunks would cost inside a sentence.
+    """
+    allowed = set("+/=_-")
+    spans: list[tuple[int, int]] = []
+    index = 0
+    size = len(text)
+    while index < size:
+        ch = text[index]
+        if ch.isalnum() or ch in allowed:
+            end = index
+            while end < size and (text[end].isalnum() or text[end] in allowed):
+                end += 1
+            body = text[index:end]
+            if (len(body) >= 20 and any(c.isdigit() for c in body)
+                    and any(c.isalpha() for c in body)):
+                spans.append((index, end))
+            index = end
+        else:
+            index += 1
+    return spans
+
+
 def scan(text: str) -> dict[str, float]:
     """Bucket the split chunks the way the committed table is keyed."""
     caps = {"word_ascii": 16, "word_wide": 12, "word_cjk": 12, "number": 4,
-            "punct_ascii": 10, "punct_wide": 8, "space": 10}
+            "punct_ascii": 10, "punct_wide": 8, "space": 10, "random": 12}
+    spans = random_runs(text)
     buckets: dict[str, float] = {}
+    offset = 0
+    span_index = 0
     for chunk in split(text):
+        start = offset
+        offset += len(chunk)
+        while span_index < len(spans) and spans[span_index][1] <= start:
+            span_index += 1
+        if (span_index < len(spans) and spans[span_index][0] <= start
+                and offset <= spans[span_index][1]):
+            nbytes = len(chunk.encode("utf-8"))
+            cap = caps["random"]
+            key = f"random:{min(nbytes, cap)}"
+            buckets[key] = buckets.get(key, 0.0) + 1.0
+            if nbytes > cap:
+                buckets["random:tail"] = buckets.get("random:tail", 0.0) + (nbytes - cap)
+            continue
         stripped = chunk.strip()
         wide = not chunk.isascii()
         core = stripped[1:] if stripped and not stripped[0].isalpha() else stripped
+
         if not stripped:
             cls = "space"
         elif any(_cjk(ch) for ch in chunk):

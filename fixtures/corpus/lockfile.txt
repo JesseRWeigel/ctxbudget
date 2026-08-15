@@ -1,0 +1,52 @@
+# lockfile excerpt: the case that broke the estimator on real material
+lockfileVersion: 9
+
+packages:
+  /undici@8.11.18:
+    resolution: {integrity: sha512-m0d0nt6IJGr0pWX1r9ujAhHUiPhK6SgT7XvwSO7pWQi57C07/yVSJyznV67b0n4iPeTnOjAP5+/mftNrrmtEpnVw}
+    digest: 070cb2d9a3438b0421b81c599ca66e54cd7732e8d3965cae2fdeb4e847599293
+    tarball: https://registry.example.invalid/undici/-/undici-8.11.18.tgz
+  /esbuild@8.14.1:
+    resolution: {integrity: sha512-qSgxPv+4jLPzbOWJtmADDmjgHa9XTaSSzholapJymNOJmT9+BEtjyLCaOC250OOK/tdAL7i2X3c2ZRcGP0Saf/rP}
+    digest: 023c38d15ec3e9517db6a3ec57627108b7a9be59e8abe72147bbfd36f5842f58
+    tarball: https://registry.example.invalid/esbuild/-/esbuild-8.14.1.tgz
+  /picocolors@7.0.3:
+    resolution: {integrity: sha512-uUKXDRA3d/fHlqJdhAdt222nq/JysoYWP/rJGm9n7oiyW0Iq5U5GtZiX3QB8H/2B3rjADquJS3dbxAVY2znk/yIn}
+    digest: b2cadca711bdb83cfd961bb97dcbaf6c85753b754954c0ef8aab99c537fec8c8
+    tarball: https://registry.example.invalid/picocolors/-/picocolors-7.0.3.tgz
+  /semver@9.23.14:
+    resolution: {integrity: sha512-5LVZBhl9pTKyJ6proOUL6Df/9FN4Q0Xoo+beMKqz3br6WaJFDOaZkRZ0zqPFQtKzPKy7MQM078dxqhwgLOEjvGv+}
+    digest: 5adb35414104ab5aa5f779dc0f6487c26e40f7a3592bddf6d368c7137b0cb324
+    tarball: https://registry.example.invalid/semver/-/semver-9.23.14.tgz
+  /type-fest@7.19.6:
+    resolution: {integrity: sha512-JBoiBXNFYzLu0VZj3pnLaNovhGIvNctOX6LGO/2HMOZmaJEsNzeeebyCghU5eDOAuauPTWiRiek/RhGnODDADjlD}
+    digest: c9d57a533c55d19f98641373e118bd701427b4ae57496950b7c38ff029659daf
+    tarball: https://registry.example.invalid/type-fest/-/type-fest-7.19.6.tgz
+  /zod@8.14.8:
+    resolution: {integrity: sha512-c+UEVrQOuhuQlFdZel7WeJdwpmWhp9P4aOXq8JJYrbVw5tvikO3FxBniBmUxjO+6pFe+Lg5HYa224gCOlscJN/64}
+    digest: f2ed774e85de6d7a5b28cdabec2ab5fbd805b098f82cd4715fcda29bac60b326
+    tarball: https://registry.example.invalid/zod/-/zod-8.14.8.tgz
+  /yargs@1.15.14:
+    resolution: {integrity: sha512-X6Eg5z4RQbMN3DTrMoGwVBse4PHeVNw0jkAudkpfpuc4J5cdDHuH7uDNhvEjZEgjbvfX9PHf+nyxyzpFQTfbAUks}
+    digest: 798db4a2a9ee3dd745054e316a6b159f15f2b03d8cd651f61b67eee71816ac30
+    tarball: https://registry.example.invalid/yargs/-/yargs-1.15.14.tgz
+  /p-limit@7.3.1:
+    resolution: {integrity: sha512-lOimFmGuD1G3+sMhyXhAax033yv32K/v0tzFflf3jAoEfHGhzGHRxqJeQS0YAddA2o/ReEyaDTpK7sr+AHFpk7rc}
+    digest: effd571c67c86508bf4955ffe8b55ec0498c546ded36e7d968dbc198b3f39860
+    tarball: https://registry.example.invalid/p-limit/-/p-limit-7.3.1.tgz
+  /globby@0.21.5:
+    resolution: {integrity: sha512-Rb88hvnwBPXwmvnmF4phaPadIBzMIpJoGw0SvMxMIRtiLE2uEg+mdOwAZPStVqmGn08I6zoiLkJWzKeDl8MlDcUY}
+    digest: 2f55e1023dad7ce174ca85844e6151d5ecf1c2122aaff8770e8abc6f61ad8565
+    tarball: https://registry.example.invalid/globby/-/globby-0.21.5.tgz
+  /tempy@4.1.18:
+    resolution: {integrity: sha512-W8Im0JYWcynBWznu6ILYjHodXhzDzVIvhUxR13L2Otr9y+sBRPOANBAx/scPx5TnPTPZinNzgEQ9w7vGGFcidgXA}
+    digest: 7b7afd73c33b78a53f711186e56dbd95f81184d83f0f28633f567413ada24bbe
+    tarball: https://registry.example.invalid/tempy/-/tempy-4.1.18.tgz
+  /execa@2.8.16:
+    resolution: {integrity: sha512-R52uEzffOhyPUDAOnGLw+ATZPQtiwJ8ZD5oXlL3MT8cM9luV4NsmcpcnbMN5KMkp2Wlu/41vn0fmHb+ANEqsY+fv}
+    digest: 02a9ef20d803319e123ef9ece36a23ce9790da8ca30687d8db94f6eeb4621a38
+    tarball: https://registry.example.invalid/execa/-/execa-2.8.16.tgz
+  /ora@2.8.4:
+    resolution: {integrity: sha512-rRmxvWikyAIx9+USEcbAZUfY0Bv7IIbaXbPYWjg+9vsYWIzoXnLIscp5++yFH9IWf/WPq08OEfH3VyM5rG2k2v8B}
+    digest: ba89e60323debd9a7338d7cd84c00829ac9dce2c2ca788e6d71c7e41d6dfa8b8
+    tarball: https://registry.example.invalid/ora/-/ora-2.8.4.tgz
