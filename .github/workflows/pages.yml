@@ -26,7 +26,13 @@ jobs:
           python-version: '3.12'
       - name: Verify before publishing
         run: bash scripts/verify.sh
+      # enablement: true turns Pages on for the repository if it is off. Without it the job
+      # fails with "Get Pages site failed", which is what happened on the first three pushes
+      # here: the workflow was committed but Pages had never been enabled in settings, so the
+      # page was never published and only the run log said so.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
