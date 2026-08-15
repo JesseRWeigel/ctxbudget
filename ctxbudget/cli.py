@@ -23,6 +23,56 @@ def read_file(path: Path) -> str:
     return data.decode("utf-8")
 
 
+#: Directories a walk never descends into. Their contents are build output or someone else's
+#: source, and neither is going into your context on purpose.
+SKIPPED_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build",
+                ".next", "target", ".cache", ".mypy_cache", ".pytest_cache"}
+
+STDIN_LABEL = "(stdin)"
+
+
+def expand(name: str, stdin_text: str | None = None) -> tuple[list[tuple[str, str]],
+                                                              list[tuple[str, str]]]:
+    """Turn one argument into (parts, skipped).
+
+    An argument is a file, a directory, or `-` for standard input, so a diff can be piped in.
+    A directory is walked, and anything under it that is not readable as UTF-8 text is skipped
+    rather than counted, because a repository has images and compiled output in it and refusing
+    to run because of a PNG would make the directory form useless.
+
+    Skipping is only defensible if it is visible, so every skipped path comes back with its
+    reason and the caller prints them. A file named on the command line is different: that is a
+    deliberate request to count that file, and it fails loudly instead.
+    """
+    if name == "-":
+        if stdin_text is None:
+            raise ValueError("nothing on standard input. Pipe something in, "
+                             "for example: git diff | ctxbudget -m gpt-4o -")
+        return [(STDIN_LABEL, stdin_text)], []
+
+    path = Path(name)
+    if not path.is_dir():
+        return [(name, read_file(path))], []
+
+    parts: list[tuple[str, str]] = []
+    skipped: list[tuple[str, str]] = []
+    for child in sorted(path.rglob("*")):
+        if any(piece in SKIPPED_DIRS for piece in child.parts):
+            continue
+        if not child.is_file() or child.is_symlink():
+            continue
+        label = str(child)
+        try:
+            parts.append((label, read_file(child)))
+        except ValueError:
+            skipped.append((label, "not text, it contains a NUL byte"))
+        except UnicodeDecodeError:
+            skipped.append((label, "not valid UTF-8"))
+        except OSError as error:
+            skipped.append((label, f"could not be read: {error.strerror or error}"))
+    return parts, skipped
+
+
 def _thousands(value: int) -> str:
     return f"{value:,}"
 
@@ -150,7 +200,9 @@ def build_parser() -> argparse.ArgumentParser:
         prog="ctxbudget",
         description="What fills a model's context window, what is left for the reply, "
                     "and what to cut first.")
-    parser.add_argument("files", nargs="*", help="files to put in the context")
+    parser.add_argument("files", nargs="*",
+                        help="files, directories, or - to read standard input, which is how you "
+                             "point it at a diff: git diff | ctxbudget -m gpt-4o -")
     parser.add_argument("--model", "-m", default="gpt-4o")
     parser.add_argument("--system", "-s", help="path to the system prompt")
     parser.add_argument("--query", "-q", default="",
@@ -177,13 +229,28 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_UNREADABLE
 
     loaded: list[tuple[str, str]] = []
+    skipped: list[tuple[str, str]] = []
+    stdin_text = None
+    if "-" in args.files and not sys.stdin.isatty():
+        stdin_text = sys.stdin.read()
     for name in args.files:
-        path = Path(name)
         try:
-            loaded.append((name, read_file(path)))
+            parts, ignored = expand(name, stdin_text)
         except (OSError, ValueError, UnicodeDecodeError) as error:
             print(f"CANNOT READ {name}: {error}", file=sys.stderr)
             return EXIT_UNREADABLE
+        if not parts and not ignored:
+            print(f"CANNOT READ {name}: it is a directory with no text files under it",
+                  file=sys.stderr)
+            return EXIT_UNREADABLE
+        loaded.extend(parts)
+        skipped.extend(ignored)
+    if skipped:
+        print(f"SKIPPED {len(skipped)} file(s) that are not text:", file=sys.stderr)
+        for label, reason in skipped[:10]:
+            print(f"  {label}: {reason}", file=sys.stderr)
+        if len(skipped) > 10:
+            print(f"  and {len(skipped) - 10} more", file=sys.stderr)
 
     system_prompt = None
     if args.system:
@@ -194,7 +261,8 @@ def main(argv: list[str] | None = None) -> int:
             return EXIT_UNREADABLE
 
     if not loaded and system_prompt is None:
-        print("nothing to count. Give at least one file or --system.", file=sys.stderr)
+        print("nothing to count. Give at least one file, a directory, - for standard input, "
+              "or --system.", file=sys.stderr)
         return EXIT_UNREADABLE
 
     try:

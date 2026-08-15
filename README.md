@@ -75,6 +75,12 @@ CUT FIRST  (tokens / ((1 + inbound refs + task match) x (1 - redundancy)))
 `src/http_client.py` is the second largest file in that set and the one the task is about.
 Ranking by size cuts it fourth; this ranks it last.
 
+An argument can be a directory, which is walked, or `-`, which reads standard input, so a diff
+goes in with `git diff | python3 -m ctxbudget -m gpt-4o -`. Files under a directory that are not
+UTF-8 text are skipped rather than counted, and every skipped path is printed with its reason. A
+file named directly on the command line is not skipped: that is a deliberate request to count it,
+so it fails with exit 2 instead.
+
 Useful flags: `--system PATH` counts a system prompt as its own part, `--json` prints the whole
 report as JSON, `--explain` shows what dividing characters by four would have said, `--reserve N`
 sets how much to hold back for the reply, `--window N` and `--family NAME` describe a model the
@@ -165,13 +171,13 @@ python3 scripts/calibrate.py --corpus ~/Projects --exclude ctxbudget --tokenizer
 
 == 2. unit tests
 ----------------------------------------------------------------------
-Ran 59 tests in 0.184s
+Ran 64 tests in 0.299s
 
 OK
    PASS
 
 == 3. the test count in the README is still true
-   README says 59 unit tests and the runner ran 59
+   README says 64 unit tests and the runner ran 64
    PASS
 
 == 4. the measurement is deterministic and does not track the working directory
@@ -182,7 +188,7 @@ OK
 == 5. sabotage suite, three gates and a null control
   error-band-dropped                 guard  applies=yes output unchanged=yes caught=yes
 
-15 of 15 sabotages proven under the three-gate rule
+16 of 16 sabotages proven under the three-gate rule
    PASS
 
 == 6. independent recomputation, importing nothing from the package
@@ -242,7 +248,7 @@ PRIVACY SCAN PASSED
    PASS
 
 == 17. the README is finished and carries this script's own success line
-   13574 chars, 0 problem(s)
+   13789 chars, 0 problem(s)
    PASS
 
 == 18. verify did not modify the tree it was verifying
@@ -252,7 +258,7 @@ PRIVACY SCAN PASSED
 VERIFY PASSED: ctxbudget, 18 of 18 steps
 ```
 
-59 unit tests, 15 sabotages under the three-gate rule with a null control, and an independent recount that imports nothing from the package and reproduces every per-file count to within 0.0%.
+64 unit tests, 16 sabotages under the three-gate rule with a null control, and an independent recount that imports nothing from the package and reproduces every per-file count to within 0.0%.
 
 ## Unfinished
 
@@ -262,9 +268,6 @@ VERIFY PASSED: ctxbudget, 18 of 18 steps
   and head counts, which verify deliberately cannot depend on, so it is not built. The KV cache
   arithmetic is the easy half; the honest half is measuring a prediction against real VRAM use,
   and neither is done.
-- **Directories and diffs are not expanded.** Every positional argument is read as one file.
-  Pointing the tool at a directory or piping a diff into it is in the task description and is not
-  implemented.
 - **Exact counts only for the two OpenAI encodings.** `tokenizers` can load the Qwen and Llama
   vocabularies and the tool does not use it even when it is installed, so those two families are
   always estimated.

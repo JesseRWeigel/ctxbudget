@@ -54,6 +54,60 @@ class CliTest(unittest.TestCase):
         finally:
             Path(name).unlink()
 
+    def test_a_directory_counts_the_files_under_it(self):
+        code, out, _ = run(["-m", "gpt-4o", "--no-exact", "--json", str(PROJECT)])
+        self.assertEqual(code, cli.EXIT_FITS)
+        payload = json.loads(out)
+        labels = {part["label"] for part in payload["parts"] if part["kind"] == "file"}
+        self.assertIn(str(PROJECT / "src" / "http_client.py"), labels)
+        self.assertIn(str(PROJECT / "vendor" / "deps.lock"), labels)
+        self.assertEqual(len(labels), sum(1 for path in PROJECT.rglob("*") if path.is_file()))
+        # The same files named one by one must come to the same number.
+        argv = ["-m", "gpt-4o", "--no-exact", "--json"]
+        argv += sorted(str(path) for path in PROJECT.rglob("*") if path.is_file())
+        _, one_by_one, _ = run(argv)
+        self.assertEqual(payload["input_tokens"], json.loads(one_by_one)["input_tokens"])
+
+    def test_a_binary_file_inside_a_directory_is_skipped_out_loud(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "notes.md").write_text("a paragraph of ordinary text\n", encoding="utf-8")
+            (root / "icon.png").write_bytes(b"\x89PNG\x00\x00binary")
+            (root / "sub").mkdir()
+            (root / "sub" / "deep.txt").write_text("more text\n", encoding="utf-8")
+            (root / "node_modules").mkdir()
+            (root / "node_modules" / "huge.js").write_text("x" * 5000, encoding="utf-8")
+            code, out, err = run(["-m", "gpt-4o", "--no-exact", "--json", str(root)])
+            self.assertEqual(code, cli.EXIT_FITS)
+            payload = json.loads(out)
+            labels = {part["label"] for part in payload["parts"] if part["kind"] == "file"}
+            self.assertEqual(labels, {str(root / "notes.md"), str(root / "sub" / "deep.txt")})
+            # Skipping silently is the failure this is guarding against, so the name and the
+            # reason both have to appear.
+            self.assertIn("SKIPPED", err)
+            self.assertIn("icon.png", err)
+            self.assertIn("NUL byte", err)
+            self.assertNotIn("huge.js", err)
+
+    def test_an_empty_directory_exits_two_rather_than_counting_zero(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            code, _, err = run(["-m", "gpt-4o", folder])
+            self.assertEqual(code, cli.EXIT_UNREADABLE)
+            self.assertIn("CANNOT READ", err)
+
+    def test_standard_input_is_counted_and_labelled(self):
+        parts, skipped = cli.expand("-", "diff --git a/x b/x\n+one added line\n")
+        self.assertEqual(skipped, [])
+        self.assertEqual(parts[0][0], cli.STDIN_LABEL)
+        self.assertIn("added line", parts[0][1])
+
+    def test_standard_input_with_nothing_on_it_is_an_error(self):
+        with self.assertRaises(ValueError) as caught:
+            cli.expand("-", None)
+        self.assertIn("standard input", str(caught.exception))
+
     def test_nothing_to_count_is_an_error_and_not_an_empty_pass(self):
         code, _, err = run(["-m", "gpt-4o"])
         self.assertEqual(code, cli.EXIT_UNREADABLE)

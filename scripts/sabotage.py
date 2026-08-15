@@ -135,6 +135,12 @@ SABOTAGES = [
         "Accept a binary file as text. Dormant on well-formed input, so the fingerprint must "
         "not move and the suite must still fail."),
     Sabotage(
+        "directory-skips-silently", GUARD, "ctxbudget/cli.py",
+        '        print(f"SKIPPED {len(skipped)} file(s) that are not text:", file=sys.stderr)',
+        "        pass",
+        "Walk a directory and drop the files that are not text without saying so. The counts do "
+        "not move, which is the whole problem, so this is judged as a guard."),
+    Sabotage(
         "error-band-dropped", GUARD, "ctxbudget/tokens.py",
         "        return Count(max(0, round(total)), ESTIMATE, self.tokenizer_label,\n"
         "                     self.accuracy[\"p95_abs_pct\"])",
