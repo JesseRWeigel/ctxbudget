@@ -9,8 +9,7 @@ from pathlib import Path
 
 from . import budget as budget_mod
 from . import rank as rank_mod
-from .tokens import (CJK_WARNING_SHARE, CJK_WORST_ERROR_PCT, TableUnavailable,
-                     cjk_share, naive_count)
+from .tokens import CJK_WARNING_SHARE, TableUnavailable, cjk_share, naive_count
 
 EXIT_FITS = 0
 EXIT_UNREADABLE = 2
@@ -209,13 +208,22 @@ def main(argv: list[str] | None = None) -> int:
 
     everything = "".join(text for _, text in loaded) + (system_prompt or "")
     share = cjk_share(everything)
-    if report.counting != "exact" and share >= CJK_WARNING_SHARE:
+    if report.counting != "exact" and share >= CJK_WARNING_SHARE and report.cjk_accuracy is None:
+        # The count is not exact, the input is CJK-heavy, and nothing measured the error on that
+        # kind of input. Saying so is the point; staying quiet would read as "no problem here".
         report.warnings.append(
-            f"{share * 100:.0f}% of this input is Han, Kana or Hangul. That is the estimator's "
-            f"worst measured case: on the committed Japanese fixture it is off by up to "
-            f"{CJK_WORST_ERROR_PCT}%, far outside the corpus-wide band printed above. Install "
-            f"tiktoken for an exact count on an OpenAI family, or treat this number as a rough "
-            f"lower bound.")
+            f"{share * 100:.0f}% of this input is Han, Kana or Hangul and nothing here measured "
+            f"the error on CJK text, so the band printed above does not describe this input and "
+            f"no other number is available. Treat the count as a rough lower bound.")
+    elif report.counting != "exact" and share >= CJK_WARNING_SHARE:
+        cjk = report.cjk_accuracy
+        report.warnings.append(
+            f"{share * 100:.0f}% of this input is Han, Kana or Hangul, so the band printed above "
+            f"does not describe it: that band comes from a corpus that is mostly ASCII code and "
+            f"prose. Measured separately on the {cjk['files']} held-out files that are at least "
+            f"{cjk['share_threshold'] * 100:.0f}% CJK, this estimate is off by a median of "
+            f"{cjk['median_abs_pct']}% and by up to {cjk['max_abs_pct']}%. Install tiktoken for "
+            f"an exact count on an OpenAI family.")
 
     tokens = {part.label: part.tokens for part in report.parts if part.kind == "file"}
     signals = rank_mod.rank(loaded, tokens, args.query) if loaded else []

@@ -55,6 +55,9 @@ class Budget:
     counting: str
     tokenizer: str
     band_pct: float | None
+    #: Held-out error measured on CJK-heavy files only, or None when the count is exact. The
+    #: corpus-wide band above is dominated by ASCII and does not describe a file of Japanese.
+    cjk_accuracy: dict | None = None
     parts: list[Part] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
@@ -173,7 +176,9 @@ def build(model_name: str, files: list[tuple[str, str]], system_prompt: str | No
 
     budget = Budget(model=name, family=fam, window=int(spec["window"]),
                     reserve=int(reserve_tokens), reserve_source=reserve_source,
-                    counting=counting, tokenizer=tokenizer, band_pct=band, warnings=warnings)
+                    counting=counting, tokenizer=tokenizer, band_pct=band,
+                    cjk_accuracy=None if counter.exact else counter.cjk_accuracy,
+                    warnings=warnings)
 
     if system_prompt is not None:
         budget.parts.append(Part("system prompt", "system", counter.count(system_prompt),

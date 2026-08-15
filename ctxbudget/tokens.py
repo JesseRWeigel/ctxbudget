@@ -113,6 +113,11 @@ class Counter:
                 f"Refit with scripts/calibrate.py to add one.")
         self.table = payload["tables"][family]
         self.accuracy = self.families[family]["accuracy"]
+        if "cjk_accuracy" not in self.families[family]:
+            raise TableUnavailable(
+                f"the table for {family!r} carries no cjk_accuracy block, so the tool has no "
+                f"measured error to quote on CJK-heavy input. Refit with scripts/calibrate.py.")
+        self.cjk_accuracy = self.families[family]["cjk_accuracy"]
         self.encoding = tiktoken_encoding_for(family) if allow_exact else None
         if self.encoding is not None:
             import tiktoken
@@ -140,10 +145,12 @@ def naive_count(text: str) -> int:
     return round(len(text) / 4)
 
 
-#: Measured on the committed fixture `japanese.txt` against all four real tokenizers. This is the
-#: estimator's worst known case and the number is real, so the tool says it out loud rather than
-#: quoting the corpus-wide band on text the corpus barely contained.
-CJK_WORST_ERROR_PCT = 37.7
+#: Share of Han, Kana or Hangul at which the corpus-wide band stops describing the input and the
+#: tool quotes the separately measured CJK error instead. The same threshold is passed to
+#: scripts/calibrate.py as --cjk-warning-share, so the number quoted was measured on the kind of
+#: file that triggers it. The error itself is not a constant here on purpose: a hardcoded one
+#: went stale the moment the table was refitted, and claimed 37.7% while the fitted table was off
+#: by 5.
 CJK_WARNING_SHARE = 0.10
 
 

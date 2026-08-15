@@ -30,7 +30,7 @@ class PretokTest(unittest.TestCase):
         self.assertEqual(pretok.classify("hello"), pretok.WORD_ASCII)
         self.assertEqual(pretok.classify("café"), pretok.WORD_WIDE)
         self.assertEqual(pretok.classify("日本語"), pretok.WORD_CJK)
-        self.assertEqual(pretok.classify("한국어"), pretok.WORD_CJK)
+        self.assertEqual(pretok.classify("한국어"), pretok.WORD_HANGUL)
         self.assertEqual(pretok.classify("123"), pretok.NUMBER)
         self.assertEqual(pretok.classify(" ==="), pretok.PUNCT_ASCII)
         self.assertEqual(pretok.classify("\n\n"), pretok.SPACE)
@@ -41,6 +41,7 @@ class PretokTest(unittest.TestCase):
         self.assertEqual(pretok.classify(",hello"), pretok.WORD_ASCII + pretok.LEAD_PUNCT)
         self.assertEqual(pretok.classify(" 日本語"), pretok.WORD_CJK + pretok.LEAD_SPACE)
         self.assertEqual(pretok.classify("、日本語"), pretok.WORD_CJK + pretok.LEAD_PUNCT)
+        self.assertEqual(pretok.classify(" 한국어"), pretok.WORD_HANGUL + pretok.LEAD_SPACE)
         for cls in (pretok.classify(" hello"), pretok.classify(",hello")):
             self.assertIn(cls, pretok.CLASSES)
             self.assertIn(cls, pretok.CAPS)

@@ -7,6 +7,12 @@
    "qwen2.5": 376,
    "llama3": 333
   },
+  "chinese.txt": {
+   "cl100k_base": 397,
+   "o200k_base": 277,
+   "qwen2.5": 231,
+   "llama3": 284
+  },
   "code_python.py": {
    "cl100k_base": 481,
    "o200k_base": 481,
@@ -36,6 +42,12 @@
    "o200k_base": 414,
    "qwen2.5": 343,
    "llama3": 372
+  },
+  "korean.txt": {
+   "cl100k_base": 535,
+   "o200k_base": 342,
+   "qwen2.5": 384,
+   "llama3": 358
   },
   "lockfile.txt": {
    "cl100k_base": 1816,

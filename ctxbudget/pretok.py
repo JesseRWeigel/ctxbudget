@@ -60,7 +60,15 @@ SPACE = "space"
 # five percent and the held-out median improves from 3.1 to 2.6 percent.
 LEAD_SPACE = "_sp"
 LEAD_PUNCT = "_px"
-WORD_BASES = (WORD_ASCII, WORD_WIDE, WORD_CJK)
+
+# Hangul is separated from Han and Kana because it does not behave like them. Korean is written
+# with spaces, so its chunks are short words rather than whole spaceless lines, and its syllable
+# blocks are covered by the merge tables far better than Han is. Priced at the Han and Kana rate
+# a Korean document came out 19 to 35 percent high depending on the family; with its own class it
+# lands inside 10. The corpus that fits it is thin, which the class support table in
+# `data/token_table.json` records rather than hides.
+WORD_HANGUL = "word_hangul"
+WORD_BASES = (WORD_ASCII, WORD_WIDE, WORD_CJK, WORD_HANGUL)
 
 # Chunks inside a random-looking run, split by whether the chunk carries an uppercase letter.
 # A lowercase hex run is full of pieces the merge table has seen; a mixed-case base64 blob is
@@ -69,11 +77,9 @@ WORD_BASES = (WORD_ASCII, WORD_WIDE, WORD_CJK)
 RANDOM_LOWER = "random_lower"
 RANDOM_UPPER = "random_upper"
 
-CLASSES = (
-    WORD_ASCII, WORD_ASCII + LEAD_SPACE, WORD_ASCII + LEAD_PUNCT,
-    WORD_WIDE, WORD_WIDE + LEAD_SPACE, WORD_WIDE + LEAD_PUNCT,
-    WORD_CJK, WORD_CJK + LEAD_SPACE, WORD_CJK + LEAD_PUNCT,
-    NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE, RANDOM_LOWER, RANDOM_UPPER,
+CLASSES = tuple(
+    [base + lead for base in WORD_BASES for lead in ("", LEAD_SPACE, LEAD_PUNCT)]
+    + [NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE, RANDOM_LOWER, RANDOM_UPPER]
 )
 
 # Byte length at which each class stops getting its own bucket and switches to a per-byte tail
@@ -83,6 +89,7 @@ _BASE_CAPS = {
     WORD_ASCII: 16,
     WORD_WIDE: 12,
     WORD_CJK: 12,
+    WORD_HANGUL: 12,
     NUMBER: 4,
     PUNCT_ASCII: 10,
     PUNCT_WIDE: 8,
@@ -115,6 +122,10 @@ def random_spans(text: str) -> list[tuple[int, int]]:
             spans.append(match.span())
     return spans
 
+# The Hangul syllable and Jamo Extended-A blocks, a subset of the CJK ranges below. Modern
+# Korean text lives entirely in the first of the two.
+_HANGUL_RANGES = ((0xA960, 0xA97F), (0xAC00, 0xD7FF))
+
 # Han, Hiragana, Katakana, Hangul and the CJK punctuation around them. Splitting these out of
 # the general non-ASCII class was worth doing: a run of Japanese has no spaces in it, so the
 # whole sentence arrives as one chunk and its cost is carried entirely by the per-byte tail
@@ -130,6 +141,11 @@ _CJK_RANGES = (
 def _is_cjk(ch: str) -> bool:
     point = ord(ch)
     return any(low <= point <= high for low, high in _CJK_RANGES)
+
+
+def _is_hangul(ch: str) -> bool:
+    point = ord(ch)
+    return any(low <= point <= high for low, high in _HANGUL_RANGES)
 
 
 def _lead(chunk: str) -> str:
@@ -160,12 +176,13 @@ def classify(chunk: str) -> str:
     # A word chunk is letters, optionally with one leading non-letter character.
     core = stripped[1:] if (stripped and not (stripped[0].isalpha())) else stripped
     cjk = wide and any(_is_cjk(ch) for ch in chunk)
+    hangul = cjk and any(_is_hangul(ch) for ch in chunk)
     if core and all(ch.isalpha() for ch in core):
         if cjk:
-            return WORD_CJK + _lead(chunk)
+            return (WORD_HANGUL if hangul else WORD_CJK) + _lead(chunk)
         return (WORD_WIDE if wide else WORD_ASCII) + _lead(chunk)
     if cjk:
-        return WORD_CJK + _lead(chunk)
+        return (WORD_HANGUL if hangul else WORD_CJK) + _lead(chunk)
     return PUNCT_WIDE if wide else PUNCT_ASCII
 
 

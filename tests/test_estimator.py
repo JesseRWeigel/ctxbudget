@@ -6,9 +6,11 @@ tests against reality without depending on `tiktoken`, on a network, or on anybo
 """
 
 import json
+import statistics
 import unittest
 from pathlib import Path
 
+from ctxbudget import pretok
 from ctxbudget.tokens import Counter, naive_count
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -17,13 +19,16 @@ TRUTH = json.loads((ROOT / "fixtures" / "truth" / "counts.json").read_text(
     encoding="utf-8"))["counts"]
 FAMILIES = ("cl100k_base", "o200k_base", "qwen2.5", "llama3")
 
-# The estimator's measured worst case is CJK, and this suite states the bound rather than
-# hiding it. Anything outside these numbers means the table was refitted and the README claims
-# need refreshing.
-PER_FILE_LIMIT_PCT = 15.0
-CJK_LIMIT_PCT = 40.0
-CORPUS_TOTAL_LIMIT_PCT = 3.0
-CJK_FILES = {"japanese.txt"}
+# The bounds the shipped table actually meets, stated here rather than hidden. Anything outside
+# them means the table was refitted and the README claims need refreshing. The worst fixture at
+# the time of writing is chinese.txt on qwen2.5 at 10.8%, and the worst corpus total is llama3 at
+# 0.9%, so these are the real numbers with a little headroom and not a formality.
+PER_FILE_LIMIT_PCT = 12.0
+CORPUS_TOTAL_LIMIT_PCT = 1.5
+# CJK used to get an exception here, at 40% against 15% for everything else. It no longer needs
+# one: Hangul has its own class and long chunks have their own intercept, so the three CJK
+# fixtures sit inside the same bound as the rest.
+CJK_FILES = {"japanese.txt", "chinese.txt", "korean.txt"}
 
 
 class EstimatorTest(unittest.TestCase):
@@ -41,12 +46,48 @@ class EstimatorTest(unittest.TestCase):
 
     def test_every_fixture_is_within_its_documented_bound(self):
         for name in sorted(TRUTH):
-            limit = CJK_LIMIT_PCT if name in CJK_FILES else PER_FILE_LIMIT_PCT
             for family in FAMILIES:
                 with self.subTest(f"{name}/{family}"):
-                    self.assertLessEqual(self.error_pct(family, name), limit)
+                    self.assertLessEqual(self.error_pct(family, name), PER_FILE_LIMIT_PCT)
 
-    def test_the_whole_corpus_totals_within_three_percent(self):
+    def test_the_cjk_record_the_tool_quotes_is_the_error_you_would_measure(self):
+        # The tool prints this number at people whose input is CJK-heavy. A constant in the
+        # source claimed 37.7% while the fitted table was off by 5, so the record is checked
+        # against the fixtures it names rather than trusted.
+        for family in FAMILIES:
+            record = self.counters[family].cjk_accuracy
+            with self.subTest(family):
+                self.assertEqual(sorted(record["fixtures"]), sorted(CJK_FILES))
+                measured = [self.error_pct(family, name) for name in record["fixtures"]]
+                self.assertAlmostEqual(max(measured), record["max_abs_pct"], places=2)
+                self.assertAlmostEqual(statistics.median(measured), record["median_abs_pct"],
+                                       places=2)
+
+    def test_every_class_the_pretokenizer_can_emit_is_priced_by_the_table(self):
+        # A missing key is a KeyError at count time, on the one input that reaches that class.
+        for family in FAMILIES:
+            table = self.counters[family].table
+            for cls in pretok.CLASSES:
+                with self.subTest(f"{family}/{cls}"):
+                    for nbytes in range(1, pretok.CAPS[cls] + 1):
+                        self.assertIn(pretok.bucket_key(cls, nbytes), table)
+                    self.assertIn(pretok.tail_key(cls), table)
+                    self.assertIn(pretok.over_key(cls), table)
+
+    def test_a_class_the_corpus_never_produced_is_recorded_as_copied(self):
+        # word_hangul_px exists because Korean text can start a word after a bracket, and this
+        # machine's corpus contains no such chunk. Copying its base class is the honest fallback;
+        # what must not happen is a copied class that reads as a fitted one.
+        support = json.loads((ROOT / "ctxbudget" / "data" / "token_table.json").read_text(
+            encoding="utf-8"))["class_support"]
+        self.assertEqual(sorted(support), sorted(pretok.CLASSES))
+        for cls, info in support.items():
+            with self.subTest(cls):
+                self.assertTrue(info["chunks"] > 0 or info.get("copied_from"),
+                                f"{cls} has no training chunks and no record of where its "
+                                f"numbers came from")
+
+    def test_the_whole_corpus_total_stays_inside_the_documented_bound(self):
         for family in FAMILIES:
             estimated = sum(self.counters[family].count(
                 (CORPUS / name).read_text(encoding="utf-8")).tokens for name in TRUTH)

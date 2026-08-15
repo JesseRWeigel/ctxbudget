@@ -175,7 +175,32 @@ def load_families(tokenizers_dir: Path) -> list[Family]:
     return families
 
 
-def fit_family(family: Family, train: list[Path]) -> dict[str, float]:
+def class_support(train: list[Path]) -> dict[str, dict[str, int]]:
+    """How many chunks and bytes of the training corpus actually fitted each class.
+
+    A class the corpus barely contains still gets numbers, because the loop below fills every
+    empty bucket from the one before it, and those numbers look exactly like fitted ones. The
+    Hangul class is the live example: this machine holds 66 Korean chunks. Recording the support
+    is what lets a reader tell a fitted class from a filled-in one.
+    """
+    support: dict[str, dict[str, int]] = {cls: {"chunks": 0, "bytes": 0} for cls in pretok.CLASSES}
+    for path in train:
+        text = read_text(path)
+        if text is None:
+            continue
+        for _, cls, nbytes in pretok.walk(text):
+            support[cls]["chunks"] += 1
+            support[cls]["bytes"] += nbytes
+    return support
+
+
+def base_class(cls: str) -> str:
+    """The class a lead variant belongs to, e.g. `word_hangul_px` -> `word_hangul`."""
+    return cls.removesuffix(pretok.LEAD_SPACE).removesuffix(pretok.LEAD_PUNCT)
+
+
+def fit_family(family: Family, train: list[Path],
+               support: dict[str, dict[str, int]]) -> dict[str, float]:
     """Mean isolated-chunk token count per bucket, plus a per-byte tail rate per class."""
     sums: dict[str, float] = {}
     counts: dict[str, float] = {}
@@ -245,6 +270,20 @@ def fit_family(family: Family, train: list[Path]) -> dict[str, float]:
             if key not in table:
                 table[key] = previous
             previous = table[key]
+
+    # A lead variant the corpus never produced is copied wholesale from its base class rather
+    # than filled in bucket by bucket from its own empty neighbours, which would invent a shape
+    # out of nothing. This machine has Korean strings but no Korean text with punctuation in
+    # front of a word, so `word_hangul_px` is copied from `word_hangul`. The copy is recorded in
+    # class_support, because a copied class must not read as a fitted one.
+    for cls in pretok.CLASSES:
+        if support[cls]["chunks"] or base_class(cls) == cls:
+            continue
+        source = base_class(cls)
+        for n in range(1, pretok.CAPS[cls] + 1):
+            table[pretok.bucket_key(cls, n)] = table[pretok.bucket_key(source, n)]
+        table[pretok.tail_key(cls)] = table[pretok.tail_key(source)]
+        table[pretok.over_key(cls)] = table[pretok.over_key(source)]
     return table
 
 
@@ -253,6 +292,55 @@ def estimate(table: dict[str, float], text: str) -> int:
     for key, count in pretok.features(text).items():
         total += table.get(key, 0.25) * count
     return max(0, round(total))
+
+
+def cjk_share(text: str) -> float:
+    if not text:
+        return 0.0
+    return sum(1 for ch in text if pretok._is_cjk(ch)) / len(text)
+
+
+def evaluate_cjk(family: Family, table: dict[str, float], fixtures: dict[str, str],
+                 corpus: list[Path], share: float) -> dict:
+    """Error on CJK-heavy text, measured separately from the corpus-wide band.
+
+    The corpus-wide band is dominated by ASCII code and prose and says nothing useful about a
+    file of Japanese, so the tool quotes this number instead once an input crosses the same share
+    threshold. It has to be measured on the same kind of file.
+
+    That measurement cannot come from the sampled corpus. Scanning every candidate file on this
+    machine for CJK found 80 that contain any at all and none above nine percent: they are source
+    files with Japanese UI strings in them, so their error is really the error on TypeScript. The
+    measurement therefore runs on the committed CJK fixtures, which sit inside the excluded
+    project directory and are never part of the fit. `corpus_files_at_threshold` records how many
+    real corpus files would have qualified, so nobody has to take that reasoning on trust.
+    """
+    errors: list[tuple[float, str]] = []
+    for name, text in sorted(fixtures.items()):
+        if cjk_share(text) < share:
+            continue
+        truth = family.encode(text)
+        errors.append((abs(estimate(table, text) - truth) / truth * 100.0, name))
+    if not errors:
+        raise SystemExit(
+            f"no committed fixture is at least {share:.0%} Han, Kana or Hangul, so the CJK "
+            f"warning would quote an error nothing measured. Add a CJK fixture to "
+            f"fixtures/corpus or lower --cjk-warning-share.")
+    qualifying = 0
+    for path in corpus:
+        text = read_text(path)
+        if text is not None and cjk_share(text) >= share:
+            qualifying += 1
+    values = sorted(value for value, _ in errors)
+    return {
+        "files": len(errors),
+        "fixtures": [name for _, name in sorted(errors, key=lambda pair: pair[1])],
+        "source": "committed fixtures, which the fit never sees",
+        "corpus_files_at_threshold": qualifying,
+        "share_threshold": share,
+        "median_abs_pct": round(statistics.median(values), 3),
+        "max_abs_pct": round(max(values), 3),
+    }
 
 
 def evaluate(family: Family, table: dict[str, float], holdout: list[Path]) -> dict:
@@ -312,6 +400,9 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=1200)
     parser.add_argument("--cjk-limit", type=int, default=60,
                         help="how many CJK-bearing files to add deliberately")
+    parser.add_argument("--cjk-warning-share", type=float, default=0.10,
+                        help="CJK share at which the tool warns, and so the share the CJK "
+                             "error is measured over. Must match tokens.CJK_WARNING_SHARE.")
     parser.add_argument("--exclude", nargs="*", default=[],
                         help="path fragments to skip, so the tool does not train on itself")
     parser.add_argument("--out-table", default="ctxbudget/data/token_table.json")
@@ -332,18 +423,46 @@ def main() -> int:
         print("need at least three real tokenizers to calibrate against", file=sys.stderr)
         return 1
 
+    fixture_dir = Path(args.fixture_dir)
+    fixtures = {path.name: path.read_text(encoding="utf-8")
+                for path in sorted(fixture_dir.iterdir()) if path.is_file()}
+    if not fixtures:
+        print(f"no fixtures under {fixture_dir}", file=sys.stderr)
+        return 1
+
     print(f"corpus {len(paths)} files ({len(supplement)} added for CJK coverage), "
-          f"train {len(train)}, holdout {len(holdout)}")
+          f"train {len(train)}, holdout {len(holdout)}, {len(fixtures)} fixtures")
+
+    support = class_support(train)
+    empty_bases = sorted(cls for cls, info in support.items()
+                         if info["chunks"] == 0 and base_class(cls) == cls)
+    if empty_bases:
+        print(f"no training chunk landed in {', '.join(empty_bases)}. Every bucket of that class "
+              f"would be filled in from its neighbour and would look fitted. Either widen the "
+              f"corpus or drop the class.", file=sys.stderr)
+        return 1
+    for cls in pretok.CLASSES:
+        if support[cls]["chunks"] == 0:
+            support[cls]["copied_from"] = base_class(cls)
+            print(f"  {cls}: no training chunk, copied from {base_class(cls)}")
+        elif support[cls]["chunks"] < 500:
+            print(f"  thin class {cls}: {support[cls]['chunks']} training chunks")
     tables: dict[str, dict[str, float]] = {}
     reports: dict[str, dict] = {}
+    cjk_reports: dict[str, dict] = {}
     for family in families:
         print(f"fitting {family.key} ...", flush=True)
-        table = fit_family(family, train)
+        table = fit_family(family, train, support)
         tables[family.key] = {key: round(value, 5) for key, value in sorted(table.items())}
         reports[family.key] = evaluate(family, tables[family.key], holdout)
+        cjk_reports[family.key] = evaluate_cjk(family, tables[family.key], fixtures, paths,
+                                               args.cjk_warning_share)
         print(f"  {family.key}: median {reports[family.key]['median_abs_pct']}% "
               f"p95 {reports[family.key]['p95_abs_pct']}% "
-              f"(chars/4 median {reports[family.key]['naive_median_abs_pct']}%)")
+              f"(chars/4 median {reports[family.key]['naive_median_abs_pct']}%), "
+              f"CJK fixtures median {cjk_reports[family.key]['median_abs_pct']}% "
+              f"max {cjk_reports[family.key]['max_abs_pct']}% "
+              f"on {cjk_reports[family.key]['files']} files")
 
     # Chat template overhead. For the two local families the wrapper is a literal string and the
     # real tokenizer is right here, so this is measured. For the OpenAI families the wrapper is
@@ -380,8 +499,10 @@ def main() -> int:
             "cjk_supplement_files": len(supplement),
             "extensions": dict(sorted(ext_counts.items(), key=lambda kv: -kv[1])),
         },
+        "class_support": support,
         "families": {family.key: {"label": family.label,
                                   "accuracy": reports[family.key],
+                                  "cjk_accuracy": cjk_reports[family.key],
                                   "chat_overhead": overhead[family.key]}
                      for family in families},
         "tables": tables,
@@ -392,14 +513,10 @@ def main() -> int:
     print(f"wrote {out_table}")
 
     # Ground truth for the committed fixture corpus, so the test suite needs no tokenizer.
-    fixture_dir = Path(args.fixture_dir)
     truth: dict[str, dict[str, int]] = {}
-    if fixture_dir.is_dir():
-        for path in sorted(fixture_dir.iterdir()):
-            if not path.is_file():
-                continue
-            text = path.read_text(encoding="utf-8")
-            truth[path.name] = {family.key: family.encode(text) for family in families}
+    if fixtures:
+        for name, text in fixtures.items():
+            truth[name] = {family.key: family.encode(text) for family in families}
         out_truth = Path(args.out_truth)
         out_truth.parent.mkdir(parents=True, exist_ok=True)
         out_truth.write_text(json.dumps(
@@ -438,6 +555,33 @@ def main() -> int:
         "",
         "The last two columns are the thing this replaces. Dividing characters by four is the "
         "usual shortcut, and its error on the same held-out files is there beside ours.",
+        "",
+        "## CJK, measured on its own",
+        "",
+        f"The band above comes from a corpus that is mostly ASCII code, and it does not describe "
+        f"a file of Japanese. So the tool quotes a separate number once an input is at least "
+        f"{args.cjk_warning_share:.0%} Han, Kana or Hangul, and that number is measured on text "
+        f"of that kind. It cannot come from the sampled corpus: of the "
+        f"{len(paths)} files in it, "
+        f"{next(iter(cjk_reports.values()))['corpus_files_at_threshold']} reach that share. The "
+        "machine has Japanese UI strings inside TypeScript files and no Japanese documents, so "
+        "an error measured on those files would be the error on TypeScript. It is measured "
+        "instead on the committed CJK fixtures, which live inside the excluded project directory "
+        "and are never part of the fit:",
+        "",
+        "| family | fixtures | median | worst |",
+        "|---|---|---|---|",
+    ]
+    for family in families:
+        report = cjk_reports[family.key]
+        lines.append(f"| `{family.key}` | {', '.join(report['fixtures'])} | "
+                     f"{report['median_abs_pct']}% | {report['max_abs_pct']}% |")
+    lines += [
+        "",
+        "Three short documents is a thin measurement and the tool says so rather than implying a "
+        "corpus stands behind it. It is still the honest number: the alternative was a constant "
+        "in the source, which is how this file previously came to claim 37.7% while the shipped "
+        "table was off by five.",
         "",
         "## Corpus shape",
         "",
