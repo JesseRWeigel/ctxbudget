@@ -1,0 +1,83 @@
+{
+ "note": "Real token counts for the committed fixture corpus, measured with the tokenizers named in ctxbudget/data/token_table.json. The test suite compares the estimator against these, so it needs no tokenizer installed.",
+ "counts": {
+  "accented.txt": {
+   "cl100k_base": 413,
+   "o200k_base": 293,
+   "qwen2.5": 376,
+   "llama3": 333
+  },
+  "code_python.py": {
+   "cl100k_base": 481,
+   "o200k_base": 481,
+   "qwen2.5": 492,
+   "llama3": 481
+  },
+  "config.yml": {
+   "cl100k_base": 268,
+   "o200k_base": 268,
+   "qwen2.5": 282,
+   "llama3": 268
+  },
+  "data.json": {
+   "cl100k_base": 428,
+   "o200k_base": 431,
+   "qwen2.5": 475,
+   "llama3": 428
+  },
+  "deploy.sh": {
+   "cl100k_base": 274,
+   "o200k_base": 277,
+   "qwen2.5": 280,
+   "llama3": 274
+  },
+  "japanese.txt": {
+   "cl100k_base": 564,
+   "o200k_base": 414,
+   "qwen2.5": 343,
+   "llama3": 372
+  },
+  "minified.js": {
+   "cl100k_base": 431,
+   "o200k_base": 435,
+   "qwen2.5": 432,
+   "llama3": 431
+  },
+  "numbers.csv": {
+   "cl100k_base": 739,
+   "o200k_base": 739,
+   "qwen2.5": 1025,
+   "llama3": 739
+  },
+  "page.html": {
+   "cl100k_base": 438,
+   "o200k_base": 438,
+   "qwen2.5": 464,
+   "llama3": 438
+  },
+  "prose_en.md": {
+   "cl100k_base": 368,
+   "o200k_base": 369,
+   "qwen2.5": 368,
+   "llama3": 368
+  },
+  "schema.sql": {
+   "cl100k_base": 346,
+   "o200k_base": 348,
+   "qwen2.5": 364,
+   "llama3": 346
+  },
+  "server.log": {
+   "cl100k_base": 777,
+   "o200k_base": 775,
+   "qwen2.5": 1113,
+   "llama3": 777
+  },
+  "types.ts": {
+   "cl100k_base": 391,
+   "o200k_base": 388,
+   "qwen2.5": 395,
+   "llama3": 391
+  }
+ }
+}

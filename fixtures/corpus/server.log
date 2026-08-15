@@ -1,0 +1,20 @@
+2026-02-03T11:20:04.118Z INFO  [ingest] batch=8841 accepted rows=512 bytes=1048576 elapsed_ms=94
+2026-02-03T11:20:04.219Z INFO  [ingest] batch=8842 accepted rows=512 bytes=1048576 elapsed_ms=88
+2026-02-03T11:20:04.311Z INFO  [ingest] batch=8843 accepted rows=512 bytes=1048576 elapsed_ms=91
+2026-02-03T11:20:04.402Z WARN  [ingest] batch=8844 retry=1 reason=downstream_timeout after_ms=2000
+2026-02-03T11:20:06.410Z INFO  [ingest] batch=8844 accepted rows=512 bytes=1048576 elapsed_ms=2008
+2026-02-03T11:20:06.501Z INFO  [ingest] batch=8845 accepted rows=512 bytes=1048576 elapsed_ms=90
+2026-02-03T11:20:06.590Z ERROR [ingest] batch=8846 rejected rows=0 reason=schema_mismatch field=temp_c expected=float got=string
+2026-02-03T11:20:06.591Z INFO  [ingest] batch=8846 quarantined path=quarantine/8846.ndjson
+2026-02-03T11:20:06.680Z INFO  [ingest] batch=8847 accepted rows=512 bytes=1048576 elapsed_ms=89
+2026-02-03T11:20:06.771Z INFO  [ingest] batch=8848 accepted rows=512 bytes=1048576 elapsed_ms=90
+2026-02-03T11:20:06.862Z INFO  [ingest] batch=8849 accepted rows=512 bytes=1048576 elapsed_ms=91
+2026-02-03T11:20:06.953Z INFO  [ingest] batch=8850 accepted rows=512 bytes=1048576 elapsed_ms=90
+2026-02-03T11:20:07.044Z DEBUG [ingest] checkpoint offset=4530688 lag_ms=112 partition=3
+2026-02-03T11:20:07.135Z INFO  [ingest] batch=8851 accepted rows=512 bytes=1048576 elapsed_ms=91
+2026-02-03T11:20:07.226Z INFO  [ingest] batch=8852 accepted rows=512 bytes=1048576 elapsed_ms=90
+2026-02-03T11:20:07.317Z INFO  [ingest] batch=8853 accepted rows=512 bytes=1048576 elapsed_ms=89
+2026-02-03T11:20:07.408Z INFO  [ingest] batch=8854 accepted rows=512 bytes=1048576 elapsed_ms=92
+2026-02-03T11:20:07.500Z WARN  [ingest] lag above target lag_ms=1180 target_ms=500 partition=1
+2026-02-03T11:20:07.591Z INFO  [ingest] batch=8855 accepted rows=512 bytes=1048576 elapsed_ms=91
+2026-02-03T11:20:07.682Z INFO  [ingest] batch=8856 accepted rows=512 bytes=1048576 elapsed_ms=90

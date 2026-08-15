@@ -1,0 +1,13 @@
+{
+ "schemaVersion": 3,
+ "generated": "2026-01-04T09:15:22Z",
+ "records": [
+  {"id": 1041, "name": "north ridge sensor", "kind": "temperature", "unit": "celsius", "calibrated": true, "readings": [18.4, 18.9, 19.2, 19.0, 18.7]},
+  {"id": 1042, "name": "south gate sensor", "kind": "humidity", "unit": "percent", "calibrated": false, "readings": [61, 63, 66, 64, 62]},
+  {"id": 1043, "name": "pump house flow", "kind": "flowrate", "unit": "litres_per_minute", "calibrated": true, "readings": [102.5, 99.8, 101.1, 100.4]},
+  {"id": 1044, "name": "roof anemometer", "kind": "windspeed", "unit": "metres_per_second", "calibrated": true, "readings": [3.2, 4.8, 6.1, 5.5, 4.0, 3.9]},
+  {"id": 1045, "name": "cellar damp probe", "kind": "humidity", "unit": "percent", "calibrated": true, "readings": [77, 78, 79, 78, 77, 76]}
+ ],
+ "thresholds": {"temperature": {"low": 5, "high": 35}, "humidity": {"low": 20, "high": 80}, "flowrate": {"low": 60, "high": 140}, "windspeed": {"low": 0, "high": 28}},
+ "notes": "Values are raw. Calibration offsets are applied downstream by the ingest job."
+}

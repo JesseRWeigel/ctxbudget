@@ -1,0 +1,13 @@
+La fenêtre de contexte est mesurée en jetons, mais presque personne ne compte les jetons.
+On compte les caractères et on divise par quatre, une règle empirique tirée de la prose anglaise.
+Sur un paquet minifié, l'estimation est très optimiste, car le tokeniseur ne trouve plus de mots
+familiers à fusionner. Ça vaut aussi pour l'allemand: Kontextfenster, Rückwärtskompatibilität,
+Geschwindigkeitsbegrenzung, Nahrungsmittelunverträglichkeit. Et pour le portugais: orçamento,
+coração, informação, atenção, manutenção, avaliação, execução, corrupção, distribuição.
+
+Symboles et signes mathématiques: plus ou moins, multiplié, divisé, inférieur ou égal.
+Cyrillique: контекстное окно измеряется в токенах, но почти никто их не считает.
+Grec: το παράθυρο συμφραζομένων μετριέται σε διακριτικά σύμβολα και κανείς δεν τα μετράει.
+Turc: bağlam penceresi belirteçlerle ölçülür, ancak neredeyse hiç kimse onları saymaz.
+Polonais: okno kontekstowe mierzy się w tokenach, ale prawie nikt ich nie liczy.
+Vietnamien: cửa sổ ngữ cảnh được đo bằng mã thông báo, nhưng hầu như không ai đếm chúng.

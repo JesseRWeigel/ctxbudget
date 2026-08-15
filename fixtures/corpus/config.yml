@@ -1,0 +1,37 @@
+version: 2
+name: context-budget-pipeline
+concurrency:
+  group: budget-per-run
+  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
+    working-directory: ./service
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [cl100k_base, o200k_base, qwen2.5, llama3]
+        window: [8192, 32768, 131072]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: python3 -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Estimate
+        run: python3 -m budget --family "$FAMILY" --window "$WINDOW"
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: budget-report
+          path: out/report.json
+  publish:
+    needs: measure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render
+        run: python3 scripts/build_docs.py --check

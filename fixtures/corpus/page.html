@@ -1,0 +1,26 @@
+<section class="budget" id="budget-panel" data-window="128000" data-reserved="16384">
+  <header>
+    <h2>Context budget</h2>
+    <p class="subtitle">What is in the window, and what is left for the reply.</p>
+  </header>
+  <table class="parts">
+    <thead>
+      <tr><th scope="col">Part</th><th scope="col">Tokens</th><th scope="col">Share</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>System prompt</td><td class="num">1,204</td><td class="num">0.9%</td></tr>
+      <tr><td>src/router.ts</td><td class="num">8,913</td><td class="num">7.0%</td></tr>
+      <tr><td>package-lock.json</td><td class="num">41,882</td><td class="num">32.7%</td></tr>
+      <tr><td>docs/architecture.md</td><td class="num">6,441</td><td class="num">5.0%</td></tr>
+      <tr><td>tests/router.test.ts</td><td class="num">5,102</td><td class="num">4.0%</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><th scope="row">Left for the reply</th><td class="num" colspan="2">16,384</td></tr>
+    </tfoot>
+  </table>
+  <p class="note">Reserved output is subtracted before anything is called a fit.</p>
+  <ul class="cuts">
+    <li><code>package-lock.json</code> saves 41,882 tokens and nothing in the set refers to it.</li>
+    <li><code>tests/router.test.ts</code> duplicates 62% of its lines with another included file.</li>
+  </ul>
+</section>
