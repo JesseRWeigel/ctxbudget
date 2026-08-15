@@ -50,13 +50,36 @@ PUNCT_ASCII = "punct_ascii"
 PUNCT_WIDE = "punct_wide"
 SPACE = "space"
 
-RANDOM = "random"
+# A word chunk is split by what it starts with, because that is what the vocabulary is built
+# around. BPE vocabularies carry a separate entry for a word preceded by a space, so " window"
+# is one token while "window" is one and ",window" is at least two: the comma has no merge into
+# the word. Fitted as one class, the cheap population and the expensive one averaged, and the
+# average was wrong in both directions at once. Measured on the committed fixtures: English
+# prose, which is almost entirely space-led words, came out 12.2 percent high, while the
+# comma-separated header row of numbers.csv came out 35.7 percent low. Split, both land inside
+# five percent and the held-out median improves from 3.1 to 2.6 percent.
+LEAD_SPACE = "_sp"
+LEAD_PUNCT = "_px"
+WORD_BASES = (WORD_ASCII, WORD_WIDE, WORD_CJK)
 
-CLASSES = (WORD_ASCII, WORD_WIDE, WORD_CJK, NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE, RANDOM)
+# Chunks inside a random-looking run, split by whether the chunk carries an uppercase letter.
+# A lowercase hex run is full of pieces the merge table has seen; a mixed-case base64 blob is
+# not, and its pieces cost close to one token each. Together they under-counted a real lockfile
+# by 12.6 percent, and separated it lands at 3.8.
+RANDOM_LOWER = "random_lower"
+RANDOM_UPPER = "random_upper"
+
+CLASSES = (
+    WORD_ASCII, WORD_ASCII + LEAD_SPACE, WORD_ASCII + LEAD_PUNCT,
+    WORD_WIDE, WORD_WIDE + LEAD_SPACE, WORD_WIDE + LEAD_PUNCT,
+    WORD_CJK, WORD_CJK + LEAD_SPACE, WORD_CJK + LEAD_PUNCT,
+    NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE, RANDOM_LOWER, RANDOM_UPPER,
+)
 
 # Byte length at which each class stops getting its own bucket and switches to a per-byte tail
-# rate. Chosen so that every bucket below the cap is populated by the calibration corpus.
-CAPS = {
+# rate. Chosen so that every bucket below the cap is populated by the calibration corpus. The
+# lead-split variants of a word class share their base class's cap.
+_BASE_CAPS = {
     WORD_ASCII: 16,
     WORD_WIDE: 12,
     WORD_CJK: 12,
@@ -64,8 +87,11 @@ CAPS = {
     PUNCT_ASCII: 10,
     PUNCT_WIDE: 8,
     SPACE: 10,
-    RANDOM: 12,
+    RANDOM_LOWER: 12,
+    RANDOM_UPPER: 12,
 }
+CAPS = {cls: _BASE_CAPS[cls.removesuffix(LEAD_SPACE).removesuffix(LEAD_PUNCT)]
+        for cls in CLASSES}
 
 # A long alphanumeric run with both letters and digits in it: an integrity hash, a base64 blob,
 # a content-addressed filename, a minified identifier table. BPE has never seen these sequences,
@@ -106,11 +132,22 @@ def _is_cjk(ch: str) -> bool:
     return any(low <= point <= high for low, high in _CJK_RANGES)
 
 
+def _lead(chunk: str) -> str:
+    """The lead suffix for a word chunk: a space, some other non-letter, or nothing."""
+    first = chunk[:1]
+    if first == " ":
+        return LEAD_SPACE
+    return "" if first.isalpha() else LEAD_PUNCT
+
+
 def classify(chunk: str) -> str:
     """Bucket one pretoken chunk into a class.
 
     Byte length rather than character length is what matters downstream, because BPE merges run
     over UTF-8 bytes. A three-byte CJK character is three merge candidates, not one.
+
+    Word chunks carry a lead suffix, `_sp` for a leading space and `_px` for any other leading
+    non-letter, because the leading character decides whether the whole chunk can be one token.
     """
     if not chunk:
         raise ValueError("empty chunk, the pretokenizer never emits one")
@@ -125,10 +162,10 @@ def classify(chunk: str) -> str:
     cjk = wide and any(_is_cjk(ch) for ch in chunk)
     if core and all(ch.isalpha() for ch in core):
         if cjk:
-            return WORD_CJK
-        return WORD_WIDE if wide else WORD_ASCII
+            return WORD_CJK + _lead(chunk)
+        return (WORD_WIDE if wide else WORD_ASCII) + _lead(chunk)
     if cjk:
-        return WORD_CJK
+        return WORD_CJK + _lead(chunk)
     return PUNCT_WIDE if wide else PUNCT_ASCII
 
 
@@ -148,6 +185,19 @@ def tail_key(cls: str) -> str:
     return f"{cls}:tail"
 
 
+def over_key(cls: str) -> str:
+    """The table key for the one-off offset charged to any chunk longer than the class cap.
+
+    Without this the cost of a long chunk is forced through the mean cost of a chunk of exactly
+    the cap length, and the per-byte rate has to absorb the difference. For CJK that mean was
+    carried by short full-width punctuation runs and sat far above the real cost of a run of
+    Japanese, so the fitted rate came out at half the true one and a spaceless Japanese line,
+    which is a single very long chunk, was 30 percent under. Letting the overflow region have its
+    own intercept costs one number per class and removes that.
+    """
+    return f"{cls}:over"
+
+
 def walk(text: str):
     """Yield (chunk, class, byte length) for the whole text.
 
@@ -163,7 +213,10 @@ def walk(text: str):
         while index < len(spans) and spans[index][1] <= start:
             index += 1
         inside = index < len(spans) and spans[index][0] <= start and end <= spans[index][1]
-        cls = RANDOM if inside else classify(chunk)
+        if inside:
+            cls = RANDOM_UPPER if any(ch.isupper() for ch in chunk) else RANDOM_LOWER
+        else:
+            cls = classify(chunk)
         yield chunk, cls, len(chunk.encode("utf-8"))
 
 
@@ -171,9 +224,9 @@ def features(text: str) -> dict[str, float]:
     """Count the buckets in a piece of text.
 
     Returns a mapping from table key to a count. Bucket keys carry an integer count of chunks,
-    tail keys carry a count of overflow bytes. The estimate is the dot product of this mapping
-    with a fitted table, which is what makes the table refittable per model family without
-    touching this function.
+    tail keys carry a count of overflow bytes, and over keys carry a count of chunks that
+    overflowed at all. The estimate is the dot product of this mapping with a fitted table, which
+    is what makes the table refittable per model family without touching this function.
     """
     counts: dict[str, float] = {}
     for _, cls, nbytes in walk(text):
@@ -183,4 +236,6 @@ def features(text: str) -> dict[str, float]:
         if nbytes > cap:
             tkey = tail_key(cls)
             counts[tkey] = counts.get(tkey, 0.0) + (nbytes - cap)
+            okey = over_key(cls)
+            counts[okey] = counts.get(okey, 0.0) + 1.0
     return counts

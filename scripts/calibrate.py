@@ -8,9 +8,11 @@ and `tokenizers` and a corpus of real files, and it produces two committed artif
     fixtures/evidence/calibration.md     what was fitted, on what, and how wrong it is
 
 Method. Every chunk of the training corpus is encoded ON ITS OWN by the real tokenizer, and the
-mean token count is recorded per (class, byte length) bucket. The estimate for a whole text is
-the sum of its bucket means. That sum is then compared against the real tokenizer's count for
-the WHOLE text, on files the fit never saw. The held-out comparison is the honest one, because
+mean token count is recorded per (class, byte length) bucket. Chunks longer than their class cap
+get a per-class straight line instead, an intercept and a per-byte rate fitted by
+occurrence-weighted least squares over the chunks that overflow. The estimate for a whole text is
+the sum of those per-chunk numbers. That sum is then compared against the real tokenizer's count
+for the WHOLE text, on files the fit never saw. The held-out comparison is the honest one, because
 chunk boundaries here are a port of one family's split regex and are not identical to any of
 these tokenizers' own.
 
@@ -217,11 +219,24 @@ def fit_family(family: Family, train: list[Path]) -> dict[str, float]:
             table[base_key] = base
         pairs = over[cls]
         if pairs:
-            num = sum((ntok - base) * occurrences for _, ntok, occurrences in pairs)
-            den = sum(extra * occurrences for extra, _, occurrences in pairs)
-            table[pretok.tail_key(cls)] = max(0.0, num / den) if den else 0.0
+            # Occurrence-weighted least squares of token count on bytes past the cap, with a free
+            # intercept. Forcing the line through `base`, the mean cost of a chunk of exactly the
+            # cap length, is what broke CJK: that mean is carried by short full-width punctuation
+            # runs and sits well above the real cost of a run of Japanese, so every long chunk
+            # contributed a negative residual and dragged the fitted rate to half its true value.
+            weight = sum(occurrences for _, _, occurrences in pairs)
+            mean_x = sum(extra * occurrences for extra, _, occurrences in pairs) / weight
+            mean_y = sum(ntok * occurrences for _, ntok, occurrences in pairs) / weight
+            sxx = sum(occurrences * (extra - mean_x) ** 2
+                      for extra, _, occurrences in pairs)
+            sxy = sum(occurrences * (extra - mean_x) * (ntok - mean_y)
+                      for extra, ntok, occurrences in pairs)
+            slope = max(0.0, sxy / sxx) if sxx else 0.0
+            table[pretok.tail_key(cls)] = slope
+            table[pretok.over_key(cls)] = mean_y - slope * mean_x - base
         else:
             table[pretok.tail_key(cls)] = 0.25
+            table[pretok.over_key(cls)] = 0.0
     # Every bucket below the cap must exist so the tool never has to guess at runtime.
     for cls in pretok.CLASSES:
         previous = 1.0
