@@ -55,6 +55,34 @@ SABOTAGES = [
         "Treat Han and Kana as ordinary non-ASCII text again, which is the bug this project "
         "found and fixed."),
     Sabotage(
+        "hangul-folded-back-into-cjk", ATTACK, "ctxbudget/pretok.py",
+        "    return any(low <= point <= high for low, high in _HANGUL_RANGES)",
+        "    return False",
+        "Price Korean at the Han and Kana rate again, which is how a Korean document came out "
+        "35 percent high."),
+    Sabotage(
+        "lead-split-collapsed", ATTACK, "ctxbudget/pretok.py",
+        '    first = chunk[:1]\n'
+        '    if first == " ":\n'
+        "        return LEAD_SPACE\n"
+        '    return "" if first.isalpha() else LEAD_PUNCT',
+        '    return ""',
+        "Charge a space-led word the same as a bare one, which averaged English prose 12 percent "
+        "high and comma-separated fields 36 percent low."),
+    Sabotage(
+        "random-run-case-ignored", ATTACK, "ctxbudget/pretok.py",
+        "            cls = RANDOM_UPPER if any(ch.isupper() for ch in chunk) else RANDOM_LOWER",
+        "            cls = RANDOM_LOWER",
+        "Price a mixed-case base64 blob like lowercase hex, which under-counted a real lockfile "
+        "by 12 percent."),
+    Sabotage(
+        "overflow-intercept-ignored", ATTACK, "ctxbudget/pretok.py",
+        "            okey = over_key(cls)\n"
+        "            counts[okey] = counts.get(okey, 0.0) + 1.0",
+        "            pass",
+        "Force the cost of a long chunk back through the mean cost of a cap-length one, which is "
+        "what halved the CJK rate."),
+    Sabotage(
         "counting-back-to-chars-over-four", ATTACK, "ctxbudget/tokens.py",
         "        total = 0.0\n"
         "        for key, occurrences in pretok.features(text).items():\n"
