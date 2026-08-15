@@ -40,8 +40,9 @@ FORBIDDEN = "ctxbudget"
 
 FAMILIES = ("cl100k_base", "o200k_base", "qwen2.5", "llama3")
 #: How far the independent recount may sit from the real token counts. The estimator's own
-#: measured error lives inside this.
-AGREEMENT_LIMIT_PCT = 6.0
+#: measured error lives inside this. The worst family currently lands at 0.9%, so the bound is
+#: not a formality; the negative control below misses it by seventy points.
+AGREEMENT_LIMIT_PCT = 2.0
 #: How far the independent scanner may sit from the package on the same file. These are two
 #: implementations of one documented split, so they should agree to the token.
 IMPLEMENTATION_LIMIT_PCT = 0.5
@@ -125,6 +126,11 @@ def _cjk(ch: str) -> bool:
         if low <= point <= high:
             return True
     return False
+
+
+def _hangul(ch: str) -> bool:
+    point = ord(ch)
+    return 0xA960 <= point <= 0xA97F or 0xAC00 <= point <= 0xD7FF
 
 
 def split(text: str) -> list[str]:
@@ -232,10 +238,62 @@ def random_runs(text: str) -> list[tuple[int, int]]:
     return spans
 
 
+CAPS = {"word_ascii": 16, "word_wide": 12, "word_cjk": 12, "word_hangul": 12, "number": 4,
+        "punct_ascii": 10, "punct_wide": 8, "space": 10,
+        "random_lower": 12, "random_upper": 12}
+
+
+def classify(chunk: str, inside_run: bool) -> str:
+    """Name the class of one chunk, following the documented scheme and not the package's code.
+
+    Word classes carry a lead suffix, `_sp` when the chunk starts with a space and `_px` when it
+    starts with any other non-letter. Chunks inside a random-looking run are named for whether
+    they carry an uppercase letter and nothing else about them matters.
+    """
+    if inside_run:
+        for ch in chunk:
+            if ch.isupper():
+                return "random_upper"
+        return "random_lower"
+    if not chunk.strip():
+        return "space"
+    stripped = chunk.strip()
+    wide = not chunk.isascii()
+    if stripped[0].isdigit():
+        return "number"
+    core = stripped[1:] if not stripped[0].isalpha() else stripped
+    hangul = False
+    cjk = False
+    for ch in chunk:
+        if _hangul(ch):
+            hangul = True
+        if _cjk(ch):
+            cjk = True
+    lettery = bool(core) and all(ch.isalpha() for ch in core)
+    if not cjk and not lettery:
+        return "punct_wide" if wide else "punct_ascii"
+    if hangul:
+        stem = "word_hangul"
+    elif cjk:
+        stem = "word_cjk"
+    elif wide:
+        stem = "word_wide"
+    else:
+        stem = "word_ascii"
+    if chunk[0] == " ":
+        return stem + "_sp"
+    if not chunk[0].isalpha():
+        return stem + "_px"
+    return stem
+
+
 def scan(text: str) -> dict[str, float]:
-    """Bucket the split chunks the way the committed table is keyed."""
-    caps = {"word_ascii": 16, "word_wide": 12, "word_cjk": 12, "number": 4,
-            "punct_ascii": 10, "punct_wide": 8, "space": 10, "random": 12}
+    """Bucket the split chunks the way the committed table is keyed.
+
+    Three key shapes come out of this, matching the three the table holds: `class:N` for a chunk
+    of N bytes, `class:tail` counting bytes past the class cap, and `class:over` counting the
+    chunks that went past it at all.
+    """
     spans = random_runs(text)
     buckets: dict[str, float] = {}
     offset = 0
@@ -245,35 +303,16 @@ def scan(text: str) -> dict[str, float]:
         offset += len(chunk)
         while span_index < len(spans) and spans[span_index][1] <= start:
             span_index += 1
-        if (span_index < len(spans) and spans[span_index][0] <= start
-                and offset <= spans[span_index][1]):
-            nbytes = len(chunk.encode("utf-8"))
-            cap = caps["random"]
-            key = f"random:{min(nbytes, cap)}"
-            buckets[key] = buckets.get(key, 0.0) + 1.0
-            if nbytes > cap:
-                buckets["random:tail"] = buckets.get("random:tail", 0.0) + (nbytes - cap)
-            continue
-        stripped = chunk.strip()
-        wide = not chunk.isascii()
-        core = stripped[1:] if stripped and not stripped[0].isalpha() else stripped
-
-        if not stripped:
-            cls = "space"
-        elif any(_cjk(ch) for ch in chunk):
-            cls = "word_cjk"
-        elif stripped[0].isdigit():
-            cls = "number"
-        elif core and all(ch.isalpha() for ch in core):
-            cls = "word_wide" if wide else "word_ascii"
-        else:
-            cls = "punct_wide" if wide else "punct_ascii"
+        inside = (span_index < len(spans) and spans[span_index][0] <= start
+                  and offset <= spans[span_index][1])
+        cls = classify(chunk, inside)
+        cap = CAPS[cls.removesuffix("_sp").removesuffix("_px")]
         nbytes = len(chunk.encode("utf-8"))
-        cap = caps[cls]
         key = f"{cls}:{min(nbytes, cap)}"
         buckets[key] = buckets.get(key, 0.0) + 1.0
         if nbytes > cap:
             buckets[f"{cls}:tail"] = buckets.get(f"{cls}:tail", 0.0) + (nbytes - cap)
+            buckets[f"{cls}:over"] = buckets.get(f"{cls}:over", 0.0) + 1.0
     return buckets
 
 
@@ -283,7 +322,11 @@ def independent_count(table: dict, family: str, text: str, use_tail: bool = True
     for key, count in scan(text).items():
         if not use_tail and key.endswith(":tail"):
             continue
-        total += weights.get(key, 0.25) * count
+        if key not in weights:
+            fail(f"the table has no entry for {key!r}, which this scanner produced from the "
+                 f"documented scheme. One of the two is out of date.")
+            continue
+        total += weights[key] * count
     return max(0, round(total))
 
 
