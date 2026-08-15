@@ -44,23 +44,41 @@ PATTERN = re.compile(
 # Class names are part of the committed table's key space. Do not rename without refitting.
 WORD_ASCII = "word_ascii"
 WORD_WIDE = "word_wide"
+WORD_CJK = "word_cjk"
 NUMBER = "number"
 PUNCT_ASCII = "punct_ascii"
 PUNCT_WIDE = "punct_wide"
 SPACE = "space"
 
-CLASSES = (WORD_ASCII, WORD_WIDE, NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE)
+CLASSES = (WORD_ASCII, WORD_WIDE, WORD_CJK, NUMBER, PUNCT_ASCII, PUNCT_WIDE, SPACE)
 
 # Byte length at which each class stops getting its own bucket and switches to a per-byte tail
 # rate. Chosen so that every bucket below the cap is populated by the calibration corpus.
 CAPS = {
     WORD_ASCII: 16,
     WORD_WIDE: 12,
+    WORD_CJK: 12,
     NUMBER: 4,
     PUNCT_ASCII: 10,
     PUNCT_WIDE: 8,
     SPACE: 10,
 }
+
+# Han, Hiragana, Katakana, Hangul and the CJK punctuation around them. Splitting these out of
+# the general non-ASCII class was worth doing: a run of Japanese has no spaces in it, so the
+# whole sentence arrives as one chunk and its cost is carried entirely by the per-byte tail
+# rate. Fitted together with accented Latin, that rate came out roughly three times too low and
+# Japanese was underestimated by about half. Separated, the same fixture lands far closer.
+_CJK_RANGES = (
+    (0x2E80, 0x9FFF), (0xA960, 0xA97F), (0xAC00, 0xD7FF),
+    (0xF900, 0xFAFF), (0xFE30, 0xFE4F), (0xFF00, 0xFFEF),
+    (0x1B000, 0x1B2FF), (0x20000, 0x3FFFF),
+)
+
+
+def _is_cjk(ch: str) -> bool:
+    point = ord(ch)
+    return any(low <= point <= high for low, high in _CJK_RANGES)
 
 
 def classify(chunk: str) -> str:
@@ -79,8 +97,13 @@ def classify(chunk: str) -> str:
         return NUMBER
     # A word chunk is letters, optionally with one leading non-letter character.
     core = stripped[1:] if (stripped and not (stripped[0].isalpha())) else stripped
+    cjk = wide and any(_is_cjk(ch) for ch in chunk)
     if core and all(ch.isalpha() for ch in core):
+        if cjk:
+            return WORD_CJK
         return WORD_WIDE if wide else WORD_ASCII
+    if cjk:
+        return WORD_CJK
     return PUNCT_WIDE if wide else PUNCT_ASCII
 
 

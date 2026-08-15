@@ -75,6 +75,47 @@ def collect(roots: list[str], limit: int, exclude: list[str] | None = None) -> l
     return found[:limit]
 
 
+def cjk_supplement(roots: list[str], exclude: list[str], already: set[Path],
+                   limit: int) -> list[Path]:
+    """Files containing a meaningful amount of CJK text.
+
+    Sampling by hash across the machine turned up almost no CJK, which left the CJK buckets
+    unfitted and Japanese underestimated by roughly half. These files are real files on the same
+    machine, pulled in deliberately rather than by chance, and the evidence file says so.
+    """
+    def is_cjk(ch: str) -> bool:
+        point = ord(ch)
+        return 0x2E80 <= point <= 0x9FFF or 0xAC00 <= point <= 0xD7FF or 0x3040 <= point <= 0x30FF
+
+    found: list[Path] = []
+    for root in roots:
+        for dirpath, dirnames, filenames in os.walk(root):
+            if any(fragment in dirpath for fragment in exclude):
+                dirnames[:] = []
+                continue
+            dirnames[:] = [
+                d for d in dirnames
+                if d not in {".git", "node_modules", "__pycache__", ".venv", "venv",
+                             "dist", "build", ".next", "target", ".cache", "site-packages"}
+            ]
+            for name in filenames:
+                path = Path(dirpath) / name
+                if path.suffix.lower() not in TEXT_EXT or path in already:
+                    continue
+                try:
+                    if not (200 <= path.stat().st_size <= MAX_BYTES):
+                        continue
+                except OSError:
+                    continue
+                text = read_text(path)
+                if text is None:
+                    continue
+                if sum(1 for ch in text[:20000] if is_cjk(ch)) > 50:
+                    found.append(path)
+    found.sort(key=lambda p: hashlib.sha256(str(p).encode()).hexdigest())
+    return found[:limit]
+
+
 def read_text(path: Path) -> str | None:
     try:
         data = path.read_bytes()
@@ -255,6 +296,8 @@ def main() -> int:
     parser.add_argument("--corpus", nargs="+", required=True)
     parser.add_argument("--tokenizers-dir", required=True)
     parser.add_argument("--limit", type=int, default=1200)
+    parser.add_argument("--cjk-limit", type=int, default=60,
+                        help="how many CJK-bearing files to add deliberately")
     parser.add_argument("--exclude", nargs="*", default=[],
                         help="path fragments to skip, so the tool does not train on itself")
     parser.add_argument("--out-table", default="ctxbudget/data/token_table.json")
@@ -264,6 +307,8 @@ def main() -> int:
     args = parser.parse_args()
 
     paths = collect(args.corpus, args.limit, args.exclude)
+    supplement = cjk_supplement(args.corpus, args.exclude, set(paths), args.cjk_limit)
+    paths.extend(supplement)
     if len(paths) < 100:
         print(f"corpus too small: {len(paths)} files", file=sys.stderr)
         return 1
@@ -273,7 +318,8 @@ def main() -> int:
         print("need at least three real tokenizers to calibrate against", file=sys.stderr)
         return 1
 
-    print(f"corpus {len(paths)} files, train {len(train)}, holdout {len(holdout)}")
+    print(f"corpus {len(paths)} files ({len(supplement)} added for CJK coverage), "
+          f"train {len(train)}, holdout {len(holdout)}")
     tables: dict[str, dict[str, float]] = {}
     reports: dict[str, dict] = {}
     for family in families:
@@ -317,6 +363,7 @@ def main() -> int:
             "files": len(paths),
             "train_files": len(train),
             "holdout_files": len(holdout),
+            "cjk_supplement_files": len(supplement),
             "extensions": dict(sorted(ext_counts.items(), key=lambda kv: -kv[1])),
         },
         "families": {family.key: {"label": family.label,
@@ -355,8 +402,10 @@ def main() -> int:
         "",
         f"Fitted and measured on {len(paths)} real text files taken read-only from repositories "
         f"on the machine that built this project. {len(train)} files fitted the table, "
-        f"{len(holdout)} were held out and never seen by the fit. File paths are deliberately "
-        "not recorded here; only counts and extensions are.",
+        f"{len(holdout)} were held out and never seen by the fit. {len(supplement)} of the "
+        "files were pulled in deliberately because they contain CJK text, since a hash-ordered "
+        "sample of this machine turned up almost none and the CJK buckets were going unfitted. "
+        "File paths are deliberately not recorded here; only counts and extensions are.",
         "",
         "Held-out error, whole-file token count, estimator against the real tokenizer:",
         "",

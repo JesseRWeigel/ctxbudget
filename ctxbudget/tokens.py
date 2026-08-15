@@ -138,3 +138,18 @@ class Counter:
 def naive_count(text: str) -> int:
     """Characters over four. Here only so the report can show what it saved you from."""
     return round(len(text) / 4)
+
+
+#: Measured on the committed fixture `japanese.txt` against all four real tokenizers. This is the
+#: estimator's worst known case and the number is real, so the tool says it out loud rather than
+#: quoting the corpus-wide band on text the corpus barely contained.
+CJK_WORST_ERROR_PCT = 37.7
+CJK_WARNING_SHARE = 0.10
+
+
+def cjk_share(text: str) -> float:
+    """Fraction of characters that are Han, Kana or Hangul."""
+    if not text:
+        return 0.0
+    hits = sum(1 for ch in text if pretok._is_cjk(ch))
+    return hits / len(text)
