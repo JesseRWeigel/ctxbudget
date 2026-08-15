@@ -143,6 +143,16 @@ def build() -> str:
     ours = sum(1 for signal in signals[:4] if signal.label in SAFE_TO_CUT)
     theirs = sum(1 for signal in by_size[:4] if signal.label in SAFE_TO_CUT)
 
+    cjk_rows = []
+    for family in FAMILIES:
+        record = TABLE["families"][family]["cjk_accuracy"]
+        cjk_rows.append([
+            family, ", ".join(record["fixtures"]),
+            (f"{record['median_abs_pct']}%", "n"),
+            (f'<span class="good">{record["max_abs_pct"]}%</span>', "n")])
+    cjk_record = TABLE["families"]["cl100k_base"]["cjk_accuracy"]
+    thin = sorted(cls for cls, info in TABLE["class_support"].items() if info["chunks"] < 500)
+
     corpus = TABLE["corpus"]
     body = f"""<main>
 <h1>ctxbudget</h1>
@@ -162,8 +172,23 @@ four scores on the same held-out files.</p>
 <h2>Per fixture, against real counts</h2>
 <p>The committed corpus, counted by <code>cl100k_base</code>. These ground truth numbers were
 produced once by a real tokenizer and committed, so the test suite needs no tokenizer installed.
-Japanese is the worst case and it is on the page rather than in a footnote.</p>
+The worst fixture on any family is on the page rather than in a footnote.</p>
 {table_block(["fixture", "real", "estimated", "error", "chars/4", "error"], fixture_rows)}
+
+<h2>CJK, measured on its own</h2>
+<p>The band above comes from a corpus that is mostly ASCII code and does not describe a file of
+Japanese, so the tool quotes a separate number once an input is at least
+{cjk_record['share_threshold'] * 100:.0f}% Han, Kana or Hangul. That number cannot come from the
+sampled corpus: of {corpus['files']} files in it, {cjk_record['corpus_files_at_threshold']} reach
+that share, because the machine holds Japanese UI strings inside TypeScript files and no Japanese
+documents. It is measured instead on the committed CJK fixtures, which sit outside the fit.</p>
+{table_block(["family", "fixtures", "median", "worst"], cjk_rows)}
+<p>Three short documents is a thin measurement and the page says so rather than implying a corpus
+stands behind it. Korean is what forced it: priced at the Han and Kana rate it came out up to 35%
+high, and it now has its own class fitted on
+{TABLE['class_support']['word_hangul']['chunks'] + TABLE['class_support']['word_hangul_sp']['chunks']}
+training chunks. The classes the corpus barely reached are {esc(", ".join(thin))}, and the count
+behind each one is in <code>class_support</code> in the committed table.</p>
 
 <h2>The window is not the input budget</h2>
 <p>The same eight files against five configurations. <code>gpt-4-turbo</code> is the case worth
@@ -191,14 +216,15 @@ a stand-in and are labelled <code>unmeasured</code> with no error band.</li>
 {esc(json.loads((ROOT / 'ctxbudget' / 'data' / 'models.json').read_text(encoding='utf-8'))['checked'])},
 not from anything this project measured. Override them with <code>--window</code> and
 <code>--reserve</code>.</li>
-<li>Japanese is the worst measured case by a wide margin, and the tool warns when the input is
-CJK-heavy instead of quoting the corpus-wide band at it.</li>
+<li>CJK is measured on three committed fixtures and not on a corpus, because this machine has
+no CJK documents to hold out. The tool quotes that measurement, with its file count, whenever the
+input crosses the threshold.</li>
 <li>The cut ranking reads structure, not meaning. A file can matter for a reason no import graph
 records, so the tool prints the counts behind every rank and removes nothing on its own.</li>
 </ul>
 
 <h2>Setting a long context on Ollama</h2>
-<p>Measured on this machine on ollama 0.32.9: only <code>options.num_ctx</code> in the API
+<p>Measured on the development machine on ollama 0.32.9: only <code>options.num_ctx</code> in the API
 request body changes the loaded context length. <code>/set parameter num_ctx</code> in the REPL
 and <code>OLLAMA_CONTEXT_LENGTH</code> in the client shell both leave the server default in
 place and report no error, so a run you believe has 128k may be truncating. Check
@@ -216,8 +242,52 @@ This page is generated from the committed data by <code>scripts/build_docs.py</c
             + body + "\n</body>\n</html>\n")
 
 
+def well_formed(page: str) -> list[str]:
+    """Every tag opened is closed, in order. A byte-for-byte rebuild check cannot catch this.
+
+    If the generator emits `<td>` without `</td>`, `--check` still passes, because the page on
+    disk is malformed in exactly the same way. So the structure is checked on its own, and the
+    numbers it renders are checked for being there at all rather than being an empty cell.
+    """
+    from html.parser import HTMLParser
+
+    void = {"meta", "br", "hr", "img", "link", "input", "source"}
+    problems: list[str] = []
+    stack: list[str] = []
+
+    class Check(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            if tag not in void:
+                stack.append(tag)
+
+        def handle_endtag(self, tag):
+            if not stack:
+                problems.append(f"</{tag}> with nothing open")
+            elif stack[-1] != tag:
+                problems.append(f"</{tag}> closes <{stack[-1]}>")
+                stack.pop()
+            else:
+                stack.pop()
+
+    parser = Check(convert_charrefs=True)
+    parser.feed(page)
+    if stack:
+        problems.append(f"never closed: {', '.join(stack)}")
+    if page.count("<td") < 100:
+        problems.append(f"only {page.count('<td')} table cells, the tables did not render")
+    for family in FAMILIES:
+        if family not in page:
+            problems.append(f"the page never mentions {family}")
+    return problems
+
+
 def main() -> int:
     page = build()
+    problems = well_formed(page)
+    if problems:
+        for problem in problems:
+            print(f"   the generated page is malformed: {problem}")
+        return 1
     if "--check" in sys.argv:
         if not OUT.exists():
             print(f"   {OUT.relative_to(ROOT)} does not exist. Run scripts/build_docs.py.")
