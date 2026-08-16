@@ -5,6 +5,8 @@ What fills a model's context window, what is left for the reply, and what to cut
 Catalog task: `CLI-034`. One of a public catalog of build ideas:
 https://github.com/JesseRWeigel/722-things-to-build
 
+**[The measured error tables and the worked examples →](https://jesserweigel.github.io/ctxbudget/)**
+
 ## What this is
 
 A command line tool that counts the tokens in a set of files, subtracts what the reply needs,
@@ -171,7 +173,7 @@ python3 scripts/calibrate.py --corpus ~/Projects --exclude ctxbudget --tokenizer
 
 == 2. unit tests
 ----------------------------------------------------------------------
-Ran 64 tests in 0.299s
+Ran 64 tests in 0.273s
 
 OK
    PASS
@@ -248,7 +250,7 @@ PRIVACY SCAN PASSED
    PASS
 
 == 17. the README is finished and carries this script's own success line
-   13789 chars, 0 problem(s)
+   13891 chars, 0 problem(s)
    PASS
 
 == 18. verify did not modify the tree it was verifying
